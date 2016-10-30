@@ -3,7 +3,7 @@
 #include<SFML\Graphics.hpp>
 
 //this class is essentiall a square of land which will have certain properties
-class Terrain : sf::Transformable
+class Terrain
 {
 public:
 	Terrain();
@@ -18,12 +18,15 @@ public:
 
 	void setUpTerrainSquare();
 
+	sf::RectangleShape shape;
+
 private:
 
+	//sf::Vector2f m_radius;
 	bool isOccupied;
 	bool isCover;
 	sf::Texture texture;
-	int positionX;
-	int positionY;
+	//int positionX;
+	//int positionY;
 
 };

@@ -1,10 +1,11 @@
 #pragma once
 
 #include <iostream>;
-//#include <string.h>
+#include <string>
 #include <SFML\Graphics.hpp>
 #include<SFML\Window.hpp>
 #include"Toolbox.h"
+#include "Terrain.h"
 
 class Game
 {
@@ -16,16 +17,20 @@ public:
 
 	void tick();
 
+	void draw();
+
 	bool isRunning;
 
 	void init();
 
-
+	std::vector<Terrain*> terrainSquares;
+	sf::RenderWindow window;
 private:
 
 	int height;
 	int width;
 
+	
 	sf::RenderWindow* gameWindow;
 	//sf::VideoMode defaultVideoMode(int, int);
 	std::string windowName;
