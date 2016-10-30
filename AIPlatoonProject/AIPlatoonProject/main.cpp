@@ -9,5 +9,8 @@ int main()
 	{
 		thisGame->isRunning = thisGame->runGame();
 	}
+
+	delete thisGame;
+
 	return 0;
 }
