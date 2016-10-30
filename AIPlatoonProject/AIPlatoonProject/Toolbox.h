@@ -10,6 +10,8 @@ public:
 
 	static void clearSpace();
 	static void printDebugMessage(std::string message);
+	static int addAHundred(int);
+	static int addATwenty(int);
 
 private:
 

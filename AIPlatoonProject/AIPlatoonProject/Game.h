@@ -4,8 +4,9 @@
 #include <string>
 #include <SFML\Graphics.hpp>
 #include<SFML\Window.hpp>
+#include <SFML\System.hpp>
 #include"Toolbox.h"
-#include "Terrain.h"
+#include "TerrainManager.h"
 
 class Game
 {
@@ -23,13 +24,13 @@ public:
 
 	void init();
 
-	std::vector<Terrain*> terrainSquares;
+	TerrainManager* terrainManager;
+
 	sf::RenderWindow window;
 private:
 
 	int height;
 	int width;
-
 	
 	sf::RenderWindow* gameWindow;
 	//sf::VideoMode defaultVideoMode(int, int);

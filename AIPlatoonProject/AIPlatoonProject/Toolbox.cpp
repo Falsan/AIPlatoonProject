@@ -23,3 +23,17 @@ void Toolbox::printDebugMessage(std::string message)
 {
 	std::cout << message << std::endl;
 }
+
+int Toolbox::addAHundred(int toMultiply)
+{
+	toMultiply = toMultiply + 100;
+
+	return toMultiply;
+}
+
+int Toolbox::addATwenty(int toAdd)
+{
+	toAdd = toAdd + 20;
+
+	return toAdd;
+}

@@ -16,7 +16,7 @@ public:
 
 	void setTexture(sf::Texture);
 
-	void setUpTerrainSquare();
+	//void setUpTerrainSquare();
 
 	sf::RectangleShape shape;
 
