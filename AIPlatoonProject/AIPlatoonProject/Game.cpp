@@ -6,11 +6,12 @@ Game::Game()
 	height = 800;
 	width = 600;
 	windowName = "PlatoonAIDemo";
+	terrainManager = new TerrainManager;
 }
 
 Game::~Game()
 {
-
+	delete terrainManager;
 }
 
 bool Game::runGame()
@@ -18,17 +19,22 @@ bool Game::runGame()
 	//defaultVideoMode(height, width);
 	//gameWindow = new sf::RenderWindow(sf::VideoMode(height, width), windowName);
 
+	sf::Thread drawThread(&Game::draw, this);
 	
-	window.create(sf::VideoMode(800, 600), "Platoon AI Demo");
 	
 	sf::Event closeEvent;
 	init();
+
+	window.setActive(false);
+	drawThread.launch();
+
 	while (isRunning == true)
 	{
-		window.pollEvent(closeEvent);
 		
 		tick();
-		draw();
+		
+	
+		window.pollEvent(closeEvent);
 
 		if (closeEvent.type == sf::Event::Closed)
 		{
@@ -48,26 +54,8 @@ bool Game::runGame()
 
 void Game::init()
 {
-	float x = 0;
-	float y = 0;
-	for (int iter = 0; iter < 100; iter++)
-	{
-		Terrain* temp = new Terrain;
-		
-		temp->shape.setSize(sf::Vector2f(100.0f, 100.0f));
-		temp->shape.setPosition(x, y);
-		temp->shape.setFillColor(sf::Color(150, 50, 250));
-		terrainSquares.push_back(temp);
-		x++;
-		
-		if (x == 10)
-		{
-			x = 0;
-			y++;
-		}
-
-		//delete temp;
-	}
+	window.create(sf::VideoMode(800, 600), "Platoon AI Demo");
+	terrainManager->setUpTerrainSquares();
 }
 
 void Game::tick()
@@ -77,16 +65,16 @@ void Game::tick()
 
 void Game::draw()
 {
-	window.clear();
 	//sf::RectangleShape rectangle(sf::Vector2f(120, 50));
 	//rectangle.setPosition(10, 50);
 	//rectangle.setFillColor(sf::Color::White);
-
-	for (auto iter = 0; iter != terrainSquares.size(); iter++)
+	
+	for (auto iter = 0; iter != terrainManager->terrainSquares.size(); iter++)
 	{
-		window.draw(terrainSquares[iter]->shape);
+		window.draw(terrainManager->terrainSquares[iter]->shape);
 	}
-
+	
 	//window.draw(rectangle);
 	window.display();
+	window.clear();
 }
