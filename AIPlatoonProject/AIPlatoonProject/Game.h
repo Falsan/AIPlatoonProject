@@ -7,6 +7,7 @@
 #include <SFML\System.hpp>
 #include"Toolbox.h"
 #include "TerrainManager.h"
+#include "Soldier.h"
 
 class Game
 {
@@ -24,7 +25,11 @@ public:
 
 	void init();
 
+	void handleInput();
+
 	TerrainManager* terrainManager;
+
+	Soldier* testSoldier;
 
 	sf::RenderWindow window;
 private:
