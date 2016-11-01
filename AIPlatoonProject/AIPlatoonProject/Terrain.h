@@ -13,6 +13,8 @@ public:
 	void setIsCover(bool);
 	bool getIsOccupied();
 	void setIsOccupied(bool);
+	bool getIsPassable();
+	void setIsPassable(bool);
 
 	void setTexture(sf::Texture);
 
@@ -25,6 +27,7 @@ private:
 	//sf::Vector2f m_radius;
 	bool isOccupied;
 	bool isCover;
+	bool isPassable;
 	sf::Texture texture;
 	//int positionX;
 	//int positionY;

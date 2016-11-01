@@ -20,19 +20,32 @@ void TerrainManager::setUpTerrainSquares()
 	{
 		Terrain* temp = new Terrain;
 
-		int isItCover = rand() % 100 + 1;
+		int isItPassable = rand() % 100 + 1;
 
-		if (isItCover >= 80)
+		if (isItPassable >= 95)
 		{
-			temp->setIsCover(true);
-			temp->shape.setFillColor(sf::Color::Blue);
+			temp->setIsPassable(false);
+			temp->setIsCover(false);
+			temp->shape.setFillColor(sf::Color::Red);
 		}
 		else
 		{
-			temp->setIsCover(false);
-			temp->shape.setFillColor(sf::Color::Magenta);
-		}
+			temp->setIsPassable(true);
 
+
+			int isItCover = rand() % 100 + 1;
+
+			if (isItCover >= 80)
+			{
+				temp->setIsCover(true);
+				temp->shape.setFillColor(sf::Color::Blue);
+			}
+			else
+			{
+				temp->setIsCover(false);
+				temp->shape.setFillColor(sf::Color::Magenta);
+			}
+		}
 		temp->setIsOccupied(false);
 
 		temp->shape.setSize(sf::Vector2f(20.0f, 20.0f));

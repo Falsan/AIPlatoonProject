@@ -34,3 +34,13 @@ void Terrain::setTexture(sf::Texture textureToSet)
 	texture = textureToSet;
 }
 
+bool Terrain::getIsPassable()
+{
+	return isPassable;
+}
+
+void Terrain::setIsPassable(bool passToSet)
+{
+	isPassable = passToSet;
+}
+
