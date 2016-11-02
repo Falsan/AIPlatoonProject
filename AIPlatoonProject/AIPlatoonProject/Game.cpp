@@ -92,6 +92,17 @@ void Game::handleInput()
 {
 	while (window.isOpen())
 	{
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
+		{
+			if (testSoldier->shape.getPosition() == terrainManager->terrainSquares[terrainManager->goalSquare]->shape.getPosition())
+			{
+
+			}
+			else
+			{
+				testSoldier->moveTowardsGoal(terrainManager->terrainSquares[terrainManager->goalSquare]->shape.getPosition(), terrainManager);
+			}
+		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
 			testSoldier->moveUp();

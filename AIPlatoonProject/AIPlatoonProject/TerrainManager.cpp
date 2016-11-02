@@ -63,4 +63,22 @@ void TerrainManager::setUpTerrainSquares()
 
 		//delete temp;
 	}
+
+	bool settingGoal = true;
+
+	while (settingGoal == true)
+	{
+		goalSquare = rand() % 1199;
+
+		if (terrainSquares[goalSquare]->getIsPassable() == true)
+		{
+			terrainSquares[goalSquare]->setGoal(true);
+			settingGoal = false;
+		}
+		else
+		{
+
+		}
+	}
+	
 }
