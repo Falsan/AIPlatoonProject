@@ -2,7 +2,7 @@
 
 Terrain::Terrain()
 {
-
+	isgoal = false;
 }
 Terrain::~Terrain()
 {
@@ -44,3 +44,12 @@ void Terrain::setIsPassable(bool passToSet)
 	isPassable = passToSet;
 }
 
+void Terrain::setGoal(bool goal)
+{
+	isgoal = goal;
+}
+
+bool Terrain::getGoal()
+{
+	return isgoal;
+}

@@ -14,6 +14,8 @@ public:
 
 	void setUpTerrainSquares();
 
+	int goalSquare;
+
 private:
 
 };
