@@ -8,6 +8,7 @@ Game::Game()
 	windowName = "PlatoonAIDemo";
 	terrainManager = new TerrainManager;
 	testSoldier = new Soldier;
+	gameState = play;
 }
 
 Game::~Game()
@@ -92,36 +93,87 @@ void Game::handleInput()
 {
 	while (window.isOpen())
 	{
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
+		if (gameState == play)
 		{
-			if (testSoldier->shape.getPosition() == terrainManager->terrainSquares[terrainManager->goalSquare]->shape.getPosition())
+			if (testSoldier->shape.getPosition() != terrainManager->terrainSquares[terrainManager->goalSquare]->shape.getPosition())
 			{
-
+				testSoldier->pathFindToGoal(terrainManager->terrainSquares[terrainManager->goalSquare]->shape.getPosition(), terrainManager);
+				testSoldier->executeCommand(testSoldier->commandList.front());
+				debugList = testSoldier->commandList;
+				testSoldier->clearCommandList();
+				sf::sleep(sf::milliseconds(100));
 			}
 			else
 			{
-				testSoldier->moveTowardsGoal(terrainManager->terrainSquares[terrainManager->goalSquare]->shape.getPosition(), terrainManager);
+				Toolbox::printDebugMessage("Arrived at goal");
+			}
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+			{
+				testSoldier->moveUp();
+				sf::sleep(sf::milliseconds(100));
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+			{
+				testSoldier->moveDown();
+				sf::sleep(sf::milliseconds(100));
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+			{
+				testSoldier->moveLeft();
+				sf::sleep(sf::milliseconds(100));
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+			{
+				testSoldier->moveRight();
+				sf::sleep(sf::milliseconds(100));
+			}
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
+			{
+				gameState = pause;
+			}
+
+			logPrinted = false;
+		}
+
+		else if(gameState == pause)
+		{
+			if (logPrinted == false)
+			{
+				Toolbox::printDebugMessage("Start of command log for test soldier");
+
+				for (auto iter = 0; iter != debugList.size(); iter++)
+				{
+					Toolbox::printDebugMessage(debugList[iter]);
+				}
+
+				Toolbox::printDebugMessage("End of command log for test soldier");
+
+				Toolbox::printDebugMessage("Position of test soldier is: ");
+				Toolbox::printDebugMessage(testSoldier->getPosition());
+				Toolbox::printDebugMessage("End of position: ");
+
+				Toolbox::printDebugMessage("Goal square is: ");
+				Toolbox::printDebugMessage(terrainManager->terrainSquares[terrainManager->goalSquare]->shape.getPosition());
+				Toolbox::printDebugMessage("End of goal square: ");
+
+				logPrinted = true;
+			}
+			else
+			{
+
+			}
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
+			{
+				gameState = play;
 			}
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		else
 		{
-			testSoldier->moveUp();
-			sf::sleep(sf::milliseconds(100));
+
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		{
-			testSoldier->moveDown();
-			sf::sleep(sf::milliseconds(100));
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		{
-			testSoldier->moveLeft();
-			sf::sleep(sf::milliseconds(100));
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		{
-			testSoldier->moveRight();
-			sf::sleep(sf::milliseconds(100));
-		}
+		
 	}
 }

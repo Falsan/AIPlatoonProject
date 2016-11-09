@@ -10,7 +10,38 @@ Soldier::~Soldier()
 
 }
 
-void Soldier::moveTowardsGoal(sf::Vector2f goalPos, TerrainManager* terrainManager)
+void Soldier::executeCommand(std::string command)
+{
+	if (command == "moveUp")
+	{
+		moveUp();
+	}
+	else if (command == "moveDown")
+	{
+		moveDown();
+	}
+	else if (command == "moveLeft")
+	{
+		moveLeft();
+	}
+	else if (command == "moveRight")
+	{
+		moveRight();
+	}
+	
+}
+
+void Soldier::addCommandToList(std::string command)
+{
+	commandList.push_back(command);
+}
+
+void Soldier::clearCommandList()
+{
+	commandList.clear();
+}
+
+void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManager)
 {
 	int currentPosition;
 	int currentUp;
@@ -18,13 +49,16 @@ void Soldier::moveTowardsGoal(sf::Vector2f goalPos, TerrainManager* terrainManag
 	int currentLeft;
 	int currentRight;
 
-	int xOrY = rand() % 2 + 1;
+	int xOrY;
 
-	if (shape.getPosition() != goalPos)
+	pathfinderPosition = shape.getPosition();
+
+	while (pathfinderPosition != goalPos)
 	{
+		xOrY = rand() % 2 + 1;
 		for (auto iter = 0; iter != terrainManager->terrainSquares.size(); iter++) //this gets the current position in the array
 		{
-			if (terrainManager->terrainSquares[iter]->shape.getPosition() == shape.getPosition())
+			if (terrainManager->terrainSquares[iter]->shape.getPosition() == pathfinderPosition)
 			{
 				currentPosition = iter; //40 down 1 accross
 				currentRight = iter + 1;
@@ -58,11 +92,11 @@ void Soldier::moveTowardsGoal(sf::Vector2f goalPos, TerrainManager* terrainManag
 		//xOrY = rand() % 2 + 1;
 		resolveIfStuck(terrainManager, currentUp, currentDown, currentLeft, currentRight);
 
-		if (shape.getPosition().y == goalPos.y)
+		if (pathfinderPosition.y == goalPos.y)
 		{
 			xOrY = 2;
 		}
-		else if (shape.getPosition().x == goalPos.x)
+		else if (pathfinderPosition.x == goalPos.x)
 		{
 			xOrY = 1;
 		}
@@ -74,15 +108,17 @@ void Soldier::moveTowardsGoal(sf::Vector2f goalPos, TerrainManager* terrainManag
 		if (/*shape.getPosition().y != goalPos.y && */xOrY == 1)
 		{
 			//move up or down
-			if ((shape.getPosition().y > goalPos.y) && terrainManager->terrainSquares[currentUp]->getIsPassable() == true)
+			if ((pathfinderPosition.y > goalPos.y) && terrainManager->terrainSquares[currentUp]->getIsPassable() == true)
 			{
-				moveUp();
-				sf::sleep(sf::milliseconds(100));
+				addCommandToList("moveUp");
+				pathfinderPosition.y = pathfinderPosition.y - 20.0f;
+				
 			}
-			else if ((shape.getPosition().y < goalPos.y) && terrainManager->terrainSquares[currentDown]->getIsPassable() == true)
+			else if ((pathfinderPosition.y < goalPos.y) && terrainManager->terrainSquares[currentDown]->getIsPassable() == true)
 			{
-				moveDown();
-				sf::sleep(sf::milliseconds(100));
+				addCommandToList("moveDown");
+				pathfinderPosition.y = pathfinderPosition.y + 20.0f;
+				
 			}
 			else
 			{
@@ -92,15 +128,15 @@ void Soldier::moveTowardsGoal(sf::Vector2f goalPos, TerrainManager* terrainManag
 		else if (/*shape.getPosition().x != goalPos.x && */xOrY == 2)
 		{
 			//move right or left
-			if ((shape.getPosition().x > goalPos.x) && terrainManager->terrainSquares[currentLeft]->getIsPassable() == true)
+			if ((pathfinderPosition.x > goalPos.x) && terrainManager->terrainSquares[currentLeft]->getIsPassable() == true)
 			{
-				moveLeft();
-				sf::sleep(sf::milliseconds(100));
+				addCommandToList("moveLeft");
+				pathfinderPosition.x = pathfinderPosition.x - 20.0f;
 			}
-			else if (shape.getPosition().x < goalPos.x && terrainManager->terrainSquares[currentRight]->getIsPassable() == true)
+			else if (pathfinderPosition.x < goalPos.x && terrainManager->terrainSquares[currentRight]->getIsPassable() == true)
 			{
-				moveRight();
-				sf::sleep(sf::milliseconds(100));
+				addCommandToList("moveRight");
+				pathfinderPosition.x = pathfinderPosition.x + 20.0f;
 			}
 			else
 			{
@@ -111,11 +147,6 @@ void Soldier::moveTowardsGoal(sf::Vector2f goalPos, TerrainManager* terrainManag
 		{
 			Toolbox::printDebugMessage("Decision to move on X or Y failed");
 		}
-	}
-	else
-	{
-			Toolbox::printDebugMessage("MoveTowardsGoal was called when at goal");
-	
 	}
 	
 }
@@ -128,23 +159,23 @@ void Soldier::resolveIfStuck(TerrainManager* terrainManager, int currentUp, int 
 	{
 		if (randomMove == 1)
 		{
-			moveDown();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveDown");
+			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
 		}
 		else if (randomMove == 2)
 		{
-			moveLeft();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveLeft");
+			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
 		}
 		else if(randomMove == 3)
 		{
-			moveLeft();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveLeft");
+			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
 		}
 		else if(randomMove == 4)
 		{
-			moveDown();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveDown");
+			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
 		}
 		else
 		{
@@ -156,23 +187,23 @@ void Soldier::resolveIfStuck(TerrainManager* terrainManager, int currentUp, int 
 	{
 		if (randomMove == 1)
 		{
-			moveDown();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveDown");
+			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
 		}
 		else if (randomMove == 2)
 		{
-			moveRight();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveRight");
+			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
 		}
 		else if (randomMove == 3)
 		{
-			moveRight();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveRight");
+			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
 		}
 		else if (randomMove == 4)
 		{
-			moveDown();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveDown");
+			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
 		}
 		else
 		{
@@ -184,23 +215,23 @@ void Soldier::resolveIfStuck(TerrainManager* terrainManager, int currentUp, int 
 	{
 		if (randomMove == 1)
 		{
-			moveUp();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveUp");
+			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
 		}
 		else if (randomMove == 2)
 		{
-			moveLeft();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveLeft");
+			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
 		}
 		else if (randomMove == 3)
 		{
-			moveLeft();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveLeft");
+			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
 		}
 		else if (randomMove == 4)
 		{
-			moveUp();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveUp");
+			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
 		}
 		else
 		{
@@ -212,23 +243,23 @@ void Soldier::resolveIfStuck(TerrainManager* terrainManager, int currentUp, int 
 	{
 		if (randomMove == 1)
 		{
-			moveUp();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveUp");
+			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
 		}
 		else if (randomMove == 2)
 		{
-			moveRight();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveRight");
+			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
 		}
 		else if (randomMove == 3)
 		{
-			moveRight();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveRight");
+			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
 		}
 		else if (randomMove == 4)
 		{
-			moveUp();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveUp");
+			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
 		}
 		else
 		{
@@ -240,23 +271,23 @@ void Soldier::resolveIfStuck(TerrainManager* terrainManager, int currentUp, int 
 	{
 		if (randomMove == 1)
 		{
-			moveDown();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveDown");
+			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
 		}
 		else if (randomMove == 2)
 		{
-			moveRight();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveRight");
+			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
 		}
 		else if (randomMove == 3)
 		{
-			moveLeft();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveLeft");
+			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
 		}
 		else if (randomMove == 4)
 		{
-			moveDown();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveDown");
+			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
 		}
 		else
 		{
@@ -268,23 +299,23 @@ void Soldier::resolveIfStuck(TerrainManager* terrainManager, int currentUp, int 
 	{
 		if (randomMove == 1)
 		{
-			moveUp();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveUp");
+			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
 		}
 		else if (randomMove == 2)
 		{
-			moveRight();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveRight");
+			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
 		}
 		else if (randomMove == 3)
 		{
-			moveLeft();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveLeft");
+			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
 		}
 		else if (randomMove == 4)
 		{
-			moveUp();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveUp");
+			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
 		}
 		else
 		{
@@ -296,23 +327,23 @@ void Soldier::resolveIfStuck(TerrainManager* terrainManager, int currentUp, int 
 	{
 		if (randomMove == 1)
 		{
-			moveUp();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveUp");
+			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
 		}
 		else if (randomMove == 2)
 		{
-			moveLeft();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveLeft");
+			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
 		}
 		else if (randomMove == 3)
 		{
-			moveLeft();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveLeft");
+			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
 		}
 		else if (randomMove == 4)
 		{
-			moveDown();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveDown");
+			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
 		}
 		else
 		{
@@ -324,23 +355,23 @@ void Soldier::resolveIfStuck(TerrainManager* terrainManager, int currentUp, int 
 	{
 		if (randomMove == 1)
 		{
-			moveUp();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveUp");
+			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
 		}
 		else if (randomMove == 2)
 		{
-			moveRight();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveRight");
+			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
 		}
 		else if (randomMove == 3)
 		{
-			moveRight();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveRight");
+			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
 		}
 		else if (randomMove == 4)
 		{
-			moveDown();
-			sf::sleep(sf::milliseconds(100));
+			addCommandToList("moveDown");
+			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
 		}
 		else
 		{
