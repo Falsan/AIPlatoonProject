@@ -16,7 +16,11 @@ public:
 	void setPosition(sf::Vector2f);
 	sf::Vector2f getPosition();
 
-	void moveTowardsGoal(sf::Vector2f, TerrainManager*);
+	void addCommandToList(std::string);
+	void executeCommand(std::string);
+	void clearCommandList();
+
+	void pathFindToGoal(sf::Vector2f, TerrainManager*);
 
 	void moveUp();
 	void moveLeft();
@@ -25,10 +29,11 @@ public:
 	void resolveIfStuck(TerrainManager*, int, int, int, int);
 
 	sf::CircleShape shape;
+	std::vector<std::string> commandList;
 
 private:
 
-
+	sf::Vector2f pathfinderPosition;
 	sf::Vector2f position;
 	sf::Texture texture;
 

@@ -24,6 +24,15 @@ void Toolbox::printDebugMessage(std::string message)
 	std::cout << message << std::endl;
 }
 
+void Toolbox::printDebugMessage(sf::Vector2f message)
+{
+	float tempx = message.x;
+	float tempy = message.y;
+
+	std::cout << "X is " << tempx << std::endl;
+	std::cout << "Y is " << tempy << std::endl;
+}
+
 int Toolbox::addAHundred(int toMultiply)
 {
 	toMultiply = toMultiply + 100;

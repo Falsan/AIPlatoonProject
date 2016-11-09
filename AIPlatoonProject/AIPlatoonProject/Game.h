@@ -8,6 +8,7 @@
 #include"Toolbox.h"
 #include "TerrainManager.h"
 #include "Soldier.h"
+#include "GameState.h"
 
 class Game
 {
@@ -33,6 +34,11 @@ public:
 
 	sf::RenderWindow window;
 private:
+
+	bool logPrinted;
+	std::vector<std::string> debugList;
+
+	int gameState;
 
 	int height;
 	int width;
