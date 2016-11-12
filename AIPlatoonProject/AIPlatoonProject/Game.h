@@ -9,6 +9,7 @@
 #include "TerrainManager.h"
 #include "Soldier.h"
 #include "GameState.h"
+#include "PlatoonSection.h"
 
 class Game
 {
@@ -30,7 +31,9 @@ public:
 
 	TerrainManager* terrainManager;
 
-	Soldier* testSoldier;
+	PlatoonSection* testPlatoon;
+
+	//Soldier* testSoldier;
 
 	sf::RenderWindow window;
 private:

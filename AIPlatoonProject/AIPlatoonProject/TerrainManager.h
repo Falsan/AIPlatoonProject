@@ -13,10 +13,13 @@ public:
 	std::vector<Terrain*> terrainSquares;
 
 	void setUpTerrainSquares();
+	void setGoalSquare(int);
+	int getGoalSquare();
 
-	int goalSquare;
+	
 
 private:
 
+	int goalSquare;
 };
 
