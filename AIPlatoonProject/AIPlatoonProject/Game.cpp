@@ -7,13 +7,15 @@ Game::Game()
 	width = 600;
 	windowName = "PlatoonAIDemo";
 	terrainManager = new TerrainManager;
-	testSoldier = new Soldier;
+	//testSoldier = new Soldier;
 	gameState = play;
+	testPlatoon = new PlatoonSection;
 }
 
 Game::~Game()
 {
-	delete testSoldier;
+	delete testPlatoon;
+	//delete testSoldier;
 	delete terrainManager;
 }
 
@@ -62,10 +64,26 @@ void Game::init()
 	window.create(sf::VideoMode(800, 600), "Platoon AI Demo");
 	terrainManager->setUpTerrainSquares();
 
-	testSoldier->shape.setFillColor(sf::Color::Green);
-	testSoldier->shape.setRadius(10.0f);
-	testSoldier->shape.setPosition(sf::Vector2f(0.0f, 0.0f));
-	testSoldier->setPosition(sf::Vector2f(0.0f, 0.0f));
+	testPlatoon->addSoldier();
+
+	//testSoldier->shape.setFillColor(sf::Color::Green);
+	//testSoldier->shape.setRadius(10.0f);
+	
+	for (auto iter2 = 0; iter2 != testPlatoon->soldiers.size(); iter2++)
+	{
+		for (auto iter = 0; iter != terrainManager->terrainSquares.size(); iter++)
+		{
+			if (terrainManager->terrainSquares[iter]->getIsOccupied())
+			{
+				testPlatoon->soldiers[iter2]->setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
+				testPlatoon->soldiers[iter2]->shape.setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
+			}
+		}
+	}
+
+	//THIS IS THE DEBUG SETTING OF GETTING COVER
+	testPlatoon->setCommand("findCover");
+	testPlatoon->giveOrders();
 }
 
 void Game::tick()
@@ -82,7 +100,12 @@ void Game::draw()
 			window.draw(terrainManager->terrainSquares[iter]->shape);
 		}
 
-		window.draw(testSoldier->shape);
+		for (auto iter = 0; iter != testPlatoon->soldiers.size(); iter++)
+		{
+			window.draw(testPlatoon->soldiers[iter]->shape);
+		}
+
+		//window.draw(testSoldier->shape);
 		
 		window.display();
 		window.clear();
@@ -95,19 +118,24 @@ void Game::handleInput()
 	{
 		if (gameState == play)
 		{
-			if (testSoldier->shape.getPosition() != terrainManager->terrainSquares[terrainManager->goalSquare]->shape.getPosition())
+			for (auto iter = 0; iter != testPlatoon->soldiers.size(); iter++)
 			{
-				testSoldier->pathFindToGoal(terrainManager->terrainSquares[terrainManager->goalSquare]->shape.getPosition(), terrainManager);
-				testSoldier->executeCommand(testSoldier->commandList.front());
-				debugList = testSoldier->commandList;
-				testSoldier->clearCommandList();
-				sf::sleep(sf::milliseconds(100));
+				if (testPlatoon->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[terrainManager->getGoalSquare()]->shape.getPosition())
+				{
+					testPlatoon->soldiers[iter]->pathFindToGoal(terrainManager->terrainSquares[terrainManager->getGoalSquare()]->shape.getPosition(), terrainManager);
+					testPlatoon->soldiers[iter]->executeCommand(terrainManager);
+					//debugList = testSoldier->commandList;
+					testPlatoon->soldiers[iter]->clearCommandList();
+					sf::sleep(sf::milliseconds(100));
+				}
+				else
+				{
+					Toolbox::printDebugMessage("Arrived at goal");
+					sf::sleep(sf::milliseconds(100));
+				}
 			}
-			else
-			{
-				Toolbox::printDebugMessage("Arrived at goal");
-			}
-
+			
+			/*
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 			{
 				testSoldier->moveUp();
@@ -127,7 +155,7 @@ void Game::handleInput()
 			{
 				testSoldier->moveRight();
 				sf::sleep(sf::milliseconds(100));
-			}
+			}*/
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
 			{
@@ -151,11 +179,11 @@ void Game::handleInput()
 				Toolbox::printDebugMessage("End of command log for test soldier");
 
 				Toolbox::printDebugMessage("Position of test soldier is: ");
-				Toolbox::printDebugMessage(testSoldier->getPosition());
+				//Toolbox::printDebugMessage(testSoldier->getPosition());
 				Toolbox::printDebugMessage("End of position: ");
 
 				Toolbox::printDebugMessage("Goal square is: ");
-				Toolbox::printDebugMessage(terrainManager->terrainSquares[terrainManager->goalSquare]->shape.getPosition());
+				Toolbox::printDebugMessage(terrainManager->terrainSquares[terrainManager->getGoalSquare()]->shape.getPosition());
 				Toolbox::printDebugMessage("End of goal square: ");
 
 				logPrinted = true;

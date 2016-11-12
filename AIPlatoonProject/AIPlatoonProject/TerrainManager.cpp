@@ -64,7 +64,7 @@ void TerrainManager::setUpTerrainSquares()
 		//delete temp;
 	}
 
-	bool settingGoal = true;
+	/*bool settingGoal = true;
 
 	while (settingGoal == true)
 	{
@@ -79,6 +79,35 @@ void TerrainManager::setUpTerrainSquares()
 		{
 
 		}
+	}*/
+
+	bool settingSpawnTest = true;
+
+	while (settingSpawnTest == true)
+	{
+		int randomSpawn = rand() % 1199;
+
+		if (terrainSquares[randomSpawn]->getIsPassable() == true)
+		{
+			terrainSquares[randomSpawn]->setIsOccupied(true);
+			settingSpawnTest = false;
+		}
+		else
+		{
+
+		}
 	}
 	
+}
+
+void TerrainManager::setGoalSquare(int squareToSet)
+{
+	terrainSquares[goalSquare]->setGoal(false);
+	goalSquare = squareToSet;
+	terrainSquares[goalSquare]->setGoal(true);
+}
+
+int TerrainManager::getGoalSquare()
+{
+	return goalSquare;
 }

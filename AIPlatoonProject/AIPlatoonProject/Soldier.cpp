@@ -2,7 +2,7 @@
 
 Soldier::Soldier()
 {
-	
+	state = aliveAndWell;
 }
 
 Soldier::~Soldier()
@@ -10,23 +10,27 @@ Soldier::~Soldier()
 
 }
 
-void Soldier::executeCommand(std::string command)
+void Soldier::executeCommand(TerrainManager* terrainManager)
 {
-	if (command == "moveUp")
+	if (commandList.front() == "moveUp")
 	{
 		moveUp();
 	}
-	else if (command == "moveDown")
+	else if (commandList.front() == "moveDown")
 	{
 		moveDown();
 	}
-	else if (command == "moveLeft")
+	else if (commandList.front() == "moveLeft")
 	{
 		moveLeft();
 	}
-	else if (command == "moveRight")
+	else if (commandList.front() == "moveRight")
 	{
 		moveRight();
+	}
+	else if (commandList.front() == "findCover")
+	{
+		findCover(terrainManager);
 	}
 	
 }
@@ -41,8 +45,44 @@ void Soldier::clearCommandList()
 	commandList.clear();
 }
 
+void Soldier::findCover(TerrainManager* terrainManager)
+{
+	sf::Vector2f goalPosition = sf::Vector2f(100.0f, 100.0f);
+	//sf::Vector2f distance = sf::Vector2f(100.0f, 100.0f);
+	float distance = 2000.0f;
+
+	for (auto iter = 0; terrainManager->terrainSquares.size() > iter; iter++)
+	{
+		if (terrainManager->terrainSquares[iter]->getIsCover())
+		{
+			float newDistanceX = terrainManager->terrainSquares[iter]->shape.getPosition().x - this->getPosition().x;
+			float newDistanceY = terrainManager->terrainSquares[iter]->shape.getPosition().y - this->getPosition().y;
+
+			newDistanceX = newDistanceX * newDistanceX;
+			newDistanceY = newDistanceY * newDistanceY;
+
+			float newDistance = newDistanceX + newDistanceY;
+
+			//newDistance = newDistance / newDistance;
+
+			//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
+			if (newDistance < distance)
+			{
+				goalPosition = terrainManager->terrainSquares[iter]->shape.getPosition();
+				distance = newDistance;
+				terrainManager->setGoalSquare(iter);
+			}
+			else
+			{
+
+			}
+		}
+	}
+}
+
 void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManager)
 {
+	
 	int currentPosition;
 	int currentUp;
 	int currentDown;
@@ -105,7 +145,7 @@ void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManage
 
 		}
 
-		if (/*shape.getPosition().y != goalPos.y && */xOrY == 1)
+		if (xOrY == 1)
 		{
 			//move up or down
 			if ((pathfinderPosition.y > goalPos.y) && terrainManager->terrainSquares[currentUp]->getIsPassable() == true)
@@ -125,7 +165,7 @@ void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManage
 				Toolbox::printDebugMessage("MoveY was called when Y for goal and position are the same");
 			}
 		}
-		else if (/*shape.getPosition().x != goalPos.x && */xOrY == 2)
+		else if (xOrY == 2)
 		{
 			//move right or left
 			if ((pathfinderPosition.x > goalPos.x) && terrainManager->terrainSquares[currentLeft]->getIsPassable() == true)
@@ -439,4 +479,24 @@ void Soldier::moveRight()
 		position.x = position.x + 20.0f;
 		shape.setPosition(sf::Vector2f(position.x, position.y));
 	}
+}
+
+std::string Soldier::getOrder()
+{
+	return currentOrder;
+}
+
+void Soldier::setOrder(std::string orderToSet)
+{
+	commandList.insert(commandList.begin(), orderToSet);
+}
+
+int Soldier::getState()
+{
+	return state;
+}
+
+void Soldier::setState(SoldierStates stateToSet)
+{
+	state = stateToSet;
 }
