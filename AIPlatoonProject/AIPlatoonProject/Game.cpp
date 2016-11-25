@@ -66,6 +66,15 @@ void Game::init()
 
 	testPlatoon->addSoldier();
 	testPlatoon->addSoldier();
+	testPlatoon->addSoldier();
+	testPlatoon->addSoldier();
+	testPlatoon->addSoldier();
+	testPlatoon->addSoldier();
+	testPlatoon->addSoldier();
+	testPlatoon->addSoldier();
+	testPlatoon->addSoldier();
+	testPlatoon->chooseLeader();
+	
 
 	//testSoldier->shape.setFillColor(sf::Color::Green);
 	//testSoldier->shape.setRadius(10.0f);
@@ -85,7 +94,7 @@ void Game::init()
 	}
 
 	//THIS IS THE DEBUG SETTING OF GETTING COVER
-	testPlatoon->setCommand("findCover");
+	testPlatoon->setCommand("findCoverTogether");
 	testPlatoon->giveOrders();
 }
 
@@ -127,23 +136,23 @@ void Game::handleInput()
 				{
 					if (testPlatoon->soldiers[iter]->commandList.size() > 0)
 					{
-						testPlatoon->soldiers[iter]->executeCommand(terrainManager);
+						testPlatoon->soldiers[iter]->executeCommand(terrainManager, testPlatoon->soldiers[testPlatoon->getLeader()]);
 					}
 					else if (testPlatoon->soldiers[iter]->commandList.size() == 0)
 					{
 						
 						testPlatoon->soldiers[iter]->pathFindToGoal(terrainManager->terrainSquares[testPlatoon->soldiers[iter]->goalSquare]->shape.getPosition(), terrainManager);
-						testPlatoon->soldiers[iter]->executeCommand(terrainManager);
+						testPlatoon->soldiers[iter]->executeCommand(terrainManager, testPlatoon->soldiers[testPlatoon->getLeader()]);
 					}
 					
 					//debugList = testSoldier->commandList;
 					testPlatoon->soldiers[iter]->clearCommandList();
-					sf::sleep(sf::milliseconds(100));
+					sf::sleep(sf::milliseconds(10));
 				}
 				else
 				{
 					Toolbox::printDebugMessage("Arrived at goal");
-					sf::sleep(sf::milliseconds(100));
+					sf::sleep(sf::milliseconds(10));
 				}
 			}
 			

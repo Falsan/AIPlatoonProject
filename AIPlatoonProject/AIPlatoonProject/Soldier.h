@@ -22,7 +22,7 @@ public:
 	std::string getOrder();
 
 	void addCommandToList(std::string);
-	void executeCommand(TerrainManager* terrainManager);
+	void executeCommand(TerrainManager* terrainManager, Soldier* leader);
 	void clearCommandList();
 
 	void pathFindToGoal(sf::Vector2f, TerrainManager*);
@@ -41,10 +41,13 @@ public:
 
 	void findCover(TerrainManager* terrainManager);
 	int goalSquare;
+	void findCoverTogether(TerrainManager*, Soldier*);
+	void setLeader(bool);
+	bool getLeader();
 
 private:
 
-	
+	bool isLeader;
 	std::vector<sf::Vector2f> pathfindPositions;
 	std::vector<int> estimatedDistances;
 	sf::Vector2f pathfinderPosition;
