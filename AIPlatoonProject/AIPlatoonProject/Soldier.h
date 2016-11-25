@@ -40,9 +40,11 @@ public:
 	std::vector<std::string> commandList;
 
 	void findCover(TerrainManager* terrainManager);
+	int goalSquare;
 
 private:
 
+	
 	std::vector<sf::Vector2f> pathfindPositions;
 	std::vector<int> estimatedDistances;
 	sf::Vector2f pathfinderPosition;

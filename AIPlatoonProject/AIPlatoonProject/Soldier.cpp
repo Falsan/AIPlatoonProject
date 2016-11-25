@@ -49,7 +49,7 @@ void Soldier::findCover(TerrainManager* terrainManager)
 {
 	sf::Vector2f goalPosition = sf::Vector2f(100.0f, 100.0f);
 	//sf::Vector2f distance = sf::Vector2f(100.0f, 100.0f);
-	float distance = 2000.0f;
+	float distance = 2000000.0f;
 
 	for (auto iter = 0; terrainManager->terrainSquares.size() > iter; iter++)
 	{
@@ -71,6 +71,7 @@ void Soldier::findCover(TerrainManager* terrainManager)
 				goalPosition = terrainManager->terrainSquares[iter]->shape.getPosition();
 				distance = newDistance;
 				terrainManager->setGoalSquare(iter);
+				goalSquare = iter;
 			}
 			else
 			{

@@ -14,7 +14,9 @@ public:
 
 	void setUpTerrainSquares();
 	void setGoalSquare(int);
-	int getGoalSquare();
+	void removeGoalFromSquare(int);
+	
+	//int getGoalSquare();
 
 	
 

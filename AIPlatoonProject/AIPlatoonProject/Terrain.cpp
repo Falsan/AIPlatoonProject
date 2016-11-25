@@ -53,3 +53,13 @@ bool Terrain::getGoal()
 {
 	return isgoal;
 }
+
+void Terrain::setSpawn(bool toSet)
+{
+	isSpawn = toSet;
+}
+
+bool Terrain::getSpawn()
+{
+	return isSpawn;
+}
