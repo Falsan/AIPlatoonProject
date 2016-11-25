@@ -17,6 +17,8 @@ public:
 	void setIsPassable(bool);
 	bool getGoal();
 	void setGoal(bool);
+	bool getSpawn();
+	void setSpawn(bool);
 
 	void setTexture(sf::Texture);
 
@@ -27,6 +29,7 @@ public:
 private:
 
 	//sf::Vector2f m_radius;
+	bool isSpawn;
 	bool isgoal;
 	bool isOccupied;
 	bool isCover;

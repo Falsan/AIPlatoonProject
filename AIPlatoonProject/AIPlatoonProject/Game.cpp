@@ -65,6 +65,7 @@ void Game::init()
 	terrainManager->setUpTerrainSquares();
 
 	testPlatoon->addSoldier();
+	testPlatoon->addSoldier();
 
 	//testSoldier->shape.setFillColor(sf::Color::Green);
 	//testSoldier->shape.setRadius(10.0f);
@@ -73,10 +74,12 @@ void Game::init()
 	{
 		for (auto iter = 0; iter != terrainManager->terrainSquares.size(); iter++)
 		{
-			if (terrainManager->terrainSquares[iter]->getIsOccupied())
+			if (terrainManager->terrainSquares[iter]->getSpawn())
 			{
 				testPlatoon->soldiers[iter2]->setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
 				testPlatoon->soldiers[iter2]->shape.setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
+				terrainManager->terrainSquares[iter]->setSpawn(false);
+				break;
 			}
 		}
 	}
@@ -120,7 +123,7 @@ void Game::handleInput()
 		{
 			for (auto iter = 0; iter != testPlatoon->soldiers.size(); iter++)
 			{
-				if (testPlatoon->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[terrainManager->getGoalSquare()]->shape.getPosition())
+				if (testPlatoon->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[testPlatoon->soldiers[iter]->goalSquare]->shape.getPosition())
 				{
 					if (testPlatoon->soldiers[iter]->commandList.size() > 0)
 					{
@@ -128,7 +131,8 @@ void Game::handleInput()
 					}
 					else if (testPlatoon->soldiers[iter]->commandList.size() == 0)
 					{
-						testPlatoon->soldiers[iter]->pathFindToGoal(terrainManager->terrainSquares[terrainManager->getGoalSquare()]->shape.getPosition(), terrainManager);
+						
+						testPlatoon->soldiers[iter]->pathFindToGoal(terrainManager->terrainSquares[testPlatoon->soldiers[iter]->goalSquare]->shape.getPosition(), terrainManager);
 						testPlatoon->soldiers[iter]->executeCommand(terrainManager);
 					}
 					
@@ -190,9 +194,9 @@ void Game::handleInput()
 				//Toolbox::printDebugMessage(testSoldier->getPosition());
 				Toolbox::printDebugMessage("End of position: ");
 
-				Toolbox::printDebugMessage("Goal square is: ");
-				Toolbox::printDebugMessage(terrainManager->terrainSquares[terrainManager->getGoalSquare()]->shape.getPosition());
-				Toolbox::printDebugMessage("End of goal square: ");
+				//Toolbox::printDebugMessage("Goal square is: ");
+				//Toolbox::printDebugMessage(terrainManager->terrainSquares[testPlatoon->soldiers[iter]->goalSquare]->shape.getPosition());
+				//Toolbox::printDebugMessage("End of goal square: ");
 
 				logPrinted = true;
 			}

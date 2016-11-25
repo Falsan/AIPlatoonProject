@@ -19,7 +19,7 @@ void TerrainManager::setUpTerrainSquares()
 	for (int iter = 0; iter < 1200; iter++)
 	{
 		Terrain* temp = new Terrain;
-
+		temp->setSpawn(false);
 		int isItPassable = rand() % 100 + 1;
 
 		if (isItPassable >= 95)
@@ -35,7 +35,7 @@ void TerrainManager::setUpTerrainSquares()
 
 			int isItCover = rand() % 100 + 1;
 
-			if (isItCover >= 90)
+			if (isItCover >= 99)
 			{
 				temp->setIsCover(true);
 				temp->shape.setFillColor(sf::Color::Blue);
@@ -81,16 +81,17 @@ void TerrainManager::setUpTerrainSquares()
 		}
 	}*/
 
-	bool settingSpawnTest = true;
+	int settingSpawnTest = 0;
 
-	while (settingSpawnTest == true)
+	while (settingSpawnTest != 2)
 	{
 		int randomSpawn = rand() % 1199;
 
-		if (terrainSquares[randomSpawn]->getIsPassable() == true && terrainSquares[randomSpawn]->getIsCover() == false)
+		if (terrainSquares[randomSpawn]->getIsPassable() == true && terrainSquares[randomSpawn]->getIsCover() == false
+			&& terrainSquares[randomSpawn]->getSpawn() == false)
 		{
-			terrainSquares[randomSpawn]->setIsOccupied(true);
-			settingSpawnTest = false;
+			terrainSquares[randomSpawn]->setSpawn(true);
+			settingSpawnTest++;
 		}
 		else
 		{
@@ -102,12 +103,18 @@ void TerrainManager::setUpTerrainSquares()
 
 void TerrainManager::setGoalSquare(int squareToSet)
 {
-	terrainSquares[goalSquare]->setGoal(false);
-	goalSquare = squareToSet;
-	terrainSquares[goalSquare]->setGoal(true);
+	terrainSquares[squareToSet]->setGoal(false);
+	//goalSquare = squareToSet;
+	terrainSquares[squareToSet]->setGoal(true);
 }
 
-int TerrainManager::getGoalSquare()
+void TerrainManager::removeGoalFromSquare(int squareToSet)
+{
+	terrainSquares[squareToSet]->setGoal(false);
+}
+
+
+/*int TerrainManager::getGoalSquare()
 {
 	return goalSquare;
-}
+}*/
