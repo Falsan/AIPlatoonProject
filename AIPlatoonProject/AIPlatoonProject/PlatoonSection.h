@@ -17,12 +17,14 @@ public:
 
 	std::string getCommand();
 	void setCommand(std::string);
-
+	void chooseLeader();
+	int getLeader();
 	void addSoldier();
 
 	std::vector<Soldier*> soldiers;
 
 private:
+	int leader;
 		//+ waypoint vector2
 		//+ waypointFlank vector2
 };

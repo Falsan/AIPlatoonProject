@@ -2,7 +2,7 @@
 
 PlatoonSection::PlatoonSection()
 {
-	
+	leader = NULL;
 }
 
 PlatoonSection::~PlatoonSection()
@@ -10,6 +10,12 @@ PlatoonSection::~PlatoonSection()
 	
 	soldiers.clear();
 	
+}
+
+void PlatoonSection::chooseLeader()
+{
+	leader = rand() % soldiers.size();
+	soldiers[leader]->setLeader(true);
 }
 
 void PlatoonSection::addSoldier()
@@ -24,7 +30,7 @@ void PlatoonSection::interpretTactics()
 {
 	if (command == "")
 	{
-
+		chooseLeader();
 	}
 	else
 	{
@@ -50,4 +56,9 @@ void PlatoonSection::setCommand(std::string commandToSet)
 std::string PlatoonSection::getCommand()
 {
 	return command;
+}
+
+int PlatoonSection::getLeader()
+{
+	return leader;
 }
