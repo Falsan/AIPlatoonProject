@@ -35,7 +35,7 @@ void TerrainManager::setUpTerrainSquares()
 
 			int isItCover = rand() % 100 + 1;
 
-			if (isItCover >= 80)
+			if (isItCover >= 90)
 			{
 				temp->setIsCover(true);
 				temp->shape.setFillColor(sf::Color::Blue);
@@ -87,7 +87,7 @@ void TerrainManager::setUpTerrainSquares()
 	{
 		int randomSpawn = rand() % 1199;
 
-		if (terrainSquares[randomSpawn]->getIsPassable() == true)
+		if (terrainSquares[randomSpawn]->getIsPassable() == true && terrainSquares[randomSpawn]->getIsCover() == false)
 		{
 			terrainSquares[randomSpawn]->setIsOccupied(true);
 			settingSpawnTest = false;

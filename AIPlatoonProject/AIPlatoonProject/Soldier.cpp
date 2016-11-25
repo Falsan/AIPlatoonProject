@@ -148,13 +148,13 @@ void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManage
 		if (xOrY == 1)
 		{
 			//move up or down
-			if ((pathfinderPosition.y > goalPos.y) && terrainManager->terrainSquares[currentUp]->getIsPassable() == true)
+			if ((pathfinderPosition.y >= goalPos.y) && terrainManager->terrainSquares[currentUp]->getIsPassable() == true)
 			{
 				addCommandToList("moveUp");
 				pathfinderPosition.y = pathfinderPosition.y - 20.0f;
 				
 			}
-			else if ((pathfinderPosition.y < goalPos.y) && terrainManager->terrainSquares[currentDown]->getIsPassable() == true)
+			else if ((pathfinderPosition.y <= goalPos.y) && terrainManager->terrainSquares[currentDown]->getIsPassable() == true)
 			{
 				addCommandToList("moveDown");
 				pathfinderPosition.y = pathfinderPosition.y + 20.0f;
@@ -168,12 +168,12 @@ void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManage
 		else if (xOrY == 2)
 		{
 			//move right or left
-			if ((pathfinderPosition.x > goalPos.x) && terrainManager->terrainSquares[currentLeft]->getIsPassable() == true)
+			if ((pathfinderPosition.x >= goalPos.x) && terrainManager->terrainSquares[currentLeft]->getIsPassable() == true)
 			{
 				addCommandToList("moveLeft");
 				pathfinderPosition.x = pathfinderPosition.x - 20.0f;
 			}
-			else if (pathfinderPosition.x < goalPos.x && terrainManager->terrainSquares[currentRight]->getIsPassable() == true)
+			else if (pathfinderPosition.x <= goalPos.x && terrainManager->terrainSquares[currentRight]->getIsPassable() == true)
 			{
 				addCommandToList("moveRight");
 				pathfinderPosition.x = pathfinderPosition.x + 20.0f;

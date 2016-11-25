@@ -122,8 +122,16 @@ void Game::handleInput()
 			{
 				if (testPlatoon->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[terrainManager->getGoalSquare()]->shape.getPosition())
 				{
-					testPlatoon->soldiers[iter]->pathFindToGoal(terrainManager->terrainSquares[terrainManager->getGoalSquare()]->shape.getPosition(), terrainManager);
-					testPlatoon->soldiers[iter]->executeCommand(terrainManager);
+					if (testPlatoon->soldiers[iter]->commandList.size() > 0)
+					{
+						testPlatoon->soldiers[iter]->executeCommand(terrainManager);
+					}
+					else if (testPlatoon->soldiers[iter]->commandList.size() == 0)
+					{
+						testPlatoon->soldiers[iter]->pathFindToGoal(terrainManager->terrainSquares[terrainManager->getGoalSquare()]->shape.getPosition(), terrainManager);
+						testPlatoon->soldiers[iter]->executeCommand(terrainManager);
+					}
+					
 					//debugList = testSoldier->commandList;
 					testPlatoon->soldiers[iter]->clearCommandList();
 					sf::sleep(sf::milliseconds(100));
