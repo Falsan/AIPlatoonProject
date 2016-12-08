@@ -156,114 +156,109 @@ void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManage
 	}
 	else
 	{
-
-
-
 		int currentPosition;
 		int currentUp;
 		int currentDown;
 		int currentLeft;
 		int currentRight;
 
-		int xOrY;
+		std::vector<std::pair<int, int>> positionsAndDistances;
+
+		positionsAndDistances.resize(terrainManager->terrainSquares.size());
 
 		pathfinderPosition = shape.getPosition();
 
-		while (pathfinderPosition != goalPos)
+		for (auto iter = 0; terrainManager->terrainSquares.size() > iter; iter++)
 		{
-			xOrY = rand() % 2 + 1;
-			for (auto iter = 0; iter != terrainManager->terrainSquares.size(); iter++) //this gets the current position in the array
+			if (terrainManager->terrainSquares[iter]->shape.getPosition() == pathfinderPosition)
 			{
-				if (terrainManager->terrainSquares[iter]->shape.getPosition() == pathfinderPosition)
+				currentPosition = iter; //40 down 1 accross
+				currentRight = iter + 1;
+				currentLeft = iter - 1;
+				currentDown = iter + 40;
+				currentUp = iter - 40;
+
+				//fudge for the issue with reading off grid
+				if (currentUp < 0)
 				{
-					currentPosition = iter; //40 down 1 accross
-					currentRight = iter + 1;
-					currentLeft = iter - 1;
-					currentDown = iter + 40;
-					currentUp = iter - 40;
+					currentUp = 0;
+				}
 
-					//fudge for the issue with reading off grid
-					if (currentUp < 0)
-					{
-						currentUp = 0;
-					}
+				if (currentDown > 1199)
+				{
+					currentDown = 1199;
+				}
 
-					if (currentDown > 1199)
-					{
-						currentDown = 1199;
-					}
+				if (currentRight > 1199)
+				{
+					currentRight = 1199;
+				}
 
-					if (currentRight > 1199)
-					{
-						currentRight = 1199;
-					}
-
-					if (currentLeft < 0)
-					{
-						currentLeft = 0;
-					}
+				if (currentLeft < 0)
+				{
+					currentLeft = 0;
 				}
 			}
+		
 
-			//xOrY = rand() % 2 + 1;
-			resolveIfStuck(terrainManager, currentUp, currentDown, currentLeft, currentRight);
+			int newDistanceX = terrainManager->terrainSquares[iter]->shape.getPosition().x - goalPos.x;
+			int newDistanceY = terrainManager->terrainSquares[iter]->shape.getPosition().y - goalPos.y;
 
-			if (pathfinderPosition.y == goalPos.y)
-			{
-				xOrY = 2;
-			}
-			else if (pathfinderPosition.x == goalPos.x)
-			{
-				xOrY = 1;
-			}
-			else
-			{
+			newDistanceX = newDistanceX * newDistanceX;
+			newDistanceY = newDistanceY * newDistanceY;
 
+			int newDistance = newDistanceX + newDistanceY;
+
+			if (terrainManager->terrainSquares[iter]->getIsPassable() == false)
+			{
+				newDistance = 2147483647;
 			}
 
-			if (xOrY == 1)
-			{
-				//move up or down
-				if ((pathfinderPosition.y >= goalPos.y) && terrainManager->terrainSquares[currentUp]->getIsPassable() == true)
-				{
-					addCommandToList("moveUp");
-					pathfinderPosition.y = pathfinderPosition.y - 20.0f;
-
-				}
-				else if ((pathfinderPosition.y <= goalPos.y) && terrainManager->terrainSquares[currentDown]->getIsPassable() == true)
-				{
-					addCommandToList("moveDown");
-					pathfinderPosition.y = pathfinderPosition.y + 20.0f;
-
-				}
-				else
-				{
-					Toolbox::printDebugMessage("MoveY was called when Y for goal and position are the same");
-				}
-			}
-			else if (xOrY == 2)
-			{
-				//move right or left
-				if ((pathfinderPosition.x >= goalPos.x) && terrainManager->terrainSquares[currentLeft]->getIsPassable() == true)
-				{
-					addCommandToList("moveLeft");
-					pathfinderPosition.x = pathfinderPosition.x - 20.0f;
-				}
-				else if (pathfinderPosition.x <= goalPos.x && terrainManager->terrainSquares[currentRight]->getIsPassable() == true)
-				{
-					addCommandToList("moveRight");
-					pathfinderPosition.x = pathfinderPosition.x + 20.0f;
-				}
-				else
-				{
-					Toolbox::printDebugMessage("MoveX was called when X for goal and position are the same");
-				}
-			}
-			else
-			{
-				Toolbox::printDebugMessage("Decision to move on X or Y failed");
-			}
+			positionsAndDistances[iter].first = iter;
+			positionsAndDistances[iter].second = newDistance;
 		}
+
+		//while (pathfinderPosition != goalPos)
+		//{
+			int leastDistance;
+
+			int tempArray[4] = { positionsAndDistances[currentUp].second, positionsAndDistances[currentDown].second, 
+				positionsAndDistances[currentLeft].second, positionsAndDistances[currentRight].second };
+			int temp = 2147483647;
+
+			for (int iter = 0; iter <= 3; iter++)
+			{
+				if (tempArray[iter] < temp) 
+				{
+					temp = tempArray[iter];
+				}
+			}
+
+			if (temp == positionsAndDistances[currentDown].second)
+			{
+				addCommandToList("moveDown");
+				pathfinderPosition.y = pathfinderPosition.y + 20.0f;
+			}
+			else if(temp == positionsAndDistances[currentLeft].second)
+			{
+				addCommandToList("moveLeft");
+				pathfinderPosition.x = pathfinderPosition.x - 20.0f;
+			}
+			else if (temp == positionsAndDistances[currentRight].second)
+			{
+				addCommandToList("moveRight");
+				pathfinderPosition.x = pathfinderPosition.x + 20.0f;
+			}
+			else if (temp == positionsAndDistances[currentUp].second)
+			{
+				addCommandToList("moveUp");
+				pathfinderPosition.y = pathfinderPosition.y - 20.0f;
+			}
+			else
+			{
+				Toolbox::printDebugMessage("SomethingWentWrong");
+			}
+		//}
 	}
 }
 
@@ -576,3 +571,98 @@ void Soldier::setState(SoldierStates stateToSet)
 {
 	state = stateToSet;
 }
+
+//OLD PATHFINDING STUFF
+
+/*xOrY = rand() % 2 + 1;
+for (auto iter = 0; iter != terrainManager->terrainSquares.size(); iter++) //this gets the current position in the array
+{
+if (terrainManager->terrainSquares[iter]->shape.getPosition() == pathfinderPosition)
+{
+currentPosition = iter; //40 down 1 accross
+currentRight = iter + 1;
+currentLeft = iter - 1;
+currentDown = iter + 40;
+currentUp = iter - 40;
+
+//fudge for the issue with reading off grid
+if (currentUp < 0)
+{
+currentUp = 0;
+}
+
+if (currentDown > 1199)
+{
+currentDown = 1199;
+}
+
+if (currentRight > 1199)
+{
+currentRight = 1199;
+}
+
+if (currentLeft < 0)
+{
+currentLeft = 0;
+}
+}
+}
+
+//xOrY = rand() % 2 + 1;
+resolveIfStuck(terrainManager, currentUp, currentDown, currentLeft, currentRight);
+
+if (pathfinderPosition.y == goalPos.y)
+{
+xOrY = 2;
+}
+else if (pathfinderPosition.x == goalPos.x)
+{
+xOrY = 1;
+}
+else
+{
+
+}
+
+if (xOrY == 1)
+{
+//move up or down
+if ((pathfinderPosition.y >= goalPos.y) && terrainManager->terrainSquares[currentUp]->getIsPassable() == true)
+{
+addCommandToList("moveUp");
+pathfinderPosition.y = pathfinderPosition.y - 20.0f;
+
+}
+else if ((pathfinderPosition.y <= goalPos.y) && terrainManager->terrainSquares[currentDown]->getIsPassable() == true)
+{
+addCommandToList("moveDown");
+pathfinderPosition.y = pathfinderPosition.y + 20.0f;
+
+}
+else
+{
+Toolbox::printDebugMessage("MoveY was called when Y for goal and position are the same");
+}
+}
+else if (xOrY == 2)
+{
+//move right or left
+if ((pathfinderPosition.x >= goalPos.x) && terrainManager->terrainSquares[currentLeft]->getIsPassable() == true)
+{
+addCommandToList("moveLeft");
+pathfinderPosition.x = pathfinderPosition.x - 20.0f;
+}
+else if (pathfinderPosition.x <= goalPos.x && terrainManager->terrainSquares[currentRight]->getIsPassable() == true)
+{
+addCommandToList("moveRight");
+pathfinderPosition.x = pathfinderPosition.x + 20.0f;
+}
+else
+{
+Toolbox::printDebugMessage("MoveX was called when X for goal and position are the same");
+}
+}
+else
+{
+Toolbox::printDebugMessage("Decision to move on X or Y failed");
+}*/
