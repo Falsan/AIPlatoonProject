@@ -3,6 +3,7 @@
 Game::Game()
 {
 	isRunning = true;
+	//mapGenerated = false;
 	height = 800;
 	width = 600;
 	windowName = "PlatoonAIDemo";
@@ -134,6 +135,11 @@ void Game::handleInput()
 			{
 				if (testPlatoon->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[testPlatoon->soldiers[iter]->goalSquare]->shape.getPosition())
 				{
+					if (testPlatoon->soldiers[iter]->mapGenerated == false)
+					{
+						testPlatoon->soldiers[iter]->generateMapToGoal(terrainManager->terrainSquares[testPlatoon->soldiers[iter]->goalSquare]->shape.getPosition(), terrainManager);
+						testPlatoon->soldiers[iter]->mapGenerated = true;
+					}
 					if (testPlatoon->soldiers[iter]->commandList.size() > 0)
 					{
 						testPlatoon->soldiers[iter]->executeCommand(terrainManager, testPlatoon->soldiers[testPlatoon->getLeader()]);
@@ -153,6 +159,7 @@ void Game::handleInput()
 				{
 					Toolbox::printDebugMessage("Arrived at goal");
 					sf::sleep(sf::milliseconds(10));
+					testPlatoon->soldiers[iter]->mapGenerated = false;
 				}
 			}
 			
@@ -199,9 +206,19 @@ void Game::handleInput()
 
 				Toolbox::printDebugMessage("End of command log for test soldier");
 
-				Toolbox::printDebugMessage("Position of test soldier is: ");
-				//Toolbox::printDebugMessage(testSoldier->getPosition());
+				Toolbox::printDebugMessage("Positions of test soldiers is: ");
+				for (auto iter = 0; iter < testPlatoon->soldiers.size(); iter++)
+				{
+					Toolbox::printDebugMessage(testPlatoon->soldiers[iter]->getPosition());
+				}
 				Toolbox::printDebugMessage("End of position: ");
+
+				Toolbox::printDebugMessage("Goals of test soldiers is: ");
+				for (auto iter = 0; iter < testPlatoon->soldiers.size(); iter++)
+				{
+					Toolbox::printDebugMessage(testPlatoon->soldiers[iter]->goalSquare);
+				}
+				Toolbox::printDebugMessage("End of goals: ");
 
 				//Toolbox::printDebugMessage("Goal square is: ");
 				//Toolbox::printDebugMessage(terrainManager->terrainSquares[testPlatoon->soldiers[iter]->goalSquare]->shape.getPosition());

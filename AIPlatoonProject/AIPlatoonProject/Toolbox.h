@@ -12,6 +12,7 @@ public:
 	static void clearSpace();
 	static void printDebugMessage(std::string message);
 	static void printDebugMessage(sf::Vector2f);
+	static void printDebugMessage(int);
 	static int addAHundred(int);
 	static int addATwenty(int);
 

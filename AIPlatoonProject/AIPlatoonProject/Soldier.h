@@ -26,6 +26,7 @@ public:
 	void clearCommandList();
 
 	void pathFindToGoal(sf::Vector2f, TerrainManager*);
+	void generateMapToGoal(sf::Vector2f, TerrainManager*);
 
 	void moveUp();
 	void moveLeft();
@@ -34,7 +35,7 @@ public:
 
 	void setState(SoldierStates);
 	int getState();
-	void resolveIfStuck(TerrainManager*, int, int, int, int);
+	//void resolveIfStuck(TerrainManager*, int, int, int, int);
 
 	sf::CircleShape shape;
 	std::vector<std::string> commandList;
@@ -44,6 +45,8 @@ public:
 	void findCoverTogether(TerrainManager*, Soldier*);
 	void setLeader(bool);
 	bool getLeader();
+
+	bool mapGenerated; //hacky way of doing it, REVISE
 
 private:
 
@@ -55,4 +58,8 @@ private:
 	sf::Texture texture;
 	int state;
 	bool pathFound;
+
+	
+
+	std::vector<std::pair<int, int>> map;
 };

@@ -49,5 +49,7 @@ private:
 	sf::RenderWindow* gameWindow;
 	//sf::VideoMode defaultVideoMode(int, int);
 	std::string windowName;
+
+	
 };
 
