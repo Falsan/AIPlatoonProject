@@ -24,6 +24,11 @@ void Toolbox::printDebugMessage(std::string message)
 	std::cout << message << std::endl;
 }
 
+void Toolbox::printDebugMessage(int message)
+{
+	std::cout << message << std::endl;
+}
+
 void Toolbox::printDebugMessage(sf::Vector2f message)
 {
 	float tempx = message.x;

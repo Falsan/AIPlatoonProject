@@ -4,6 +4,7 @@ Soldier::Soldier()
 {
 	state = aliveAndWell;
 	isLeader = false;
+	mapGenerated = false;
 }
 
 Soldier::~Soldier()
@@ -121,13 +122,13 @@ void Soldier::findCoverTogether(TerrainManager* terrainManager, Soldier* leader)
 		{
 			if (terrainManager->terrainSquares[iter]->getIsCover() && !terrainManager->terrainSquares[iter]->getGoal())
 			{
-				float newDistanceX = terrainManager->terrainSquares[iter]->shape.getPosition().x - leader->getPosition().x;
-				float newDistanceY = terrainManager->terrainSquares[iter]->shape.getPosition().y - leader->getPosition().y;
+				long newDistanceX = terrainManager->terrainSquares[iter]->shape.getPosition().x - leader->getPosition().x;
+				long newDistanceY = terrainManager->terrainSquares[iter]->shape.getPosition().y - leader->getPosition().y;
 
 				newDistanceX = newDistanceX * newDistanceX;
 				newDistanceY = newDistanceY * newDistanceY;
 
-				float newDistance = newDistanceX + newDistanceY;
+				long newDistance = newDistanceX + newDistanceY;
 
 				//newDistance = newDistance / newDistance;
 
@@ -148,6 +149,31 @@ void Soldier::findCoverTogether(TerrainManager* terrainManager, Soldier* leader)
 	}
 }
 
+void Soldier::generateMapToGoal(sf::Vector2f goalPos, TerrainManager* terrainManager)
+{
+
+	map.resize(terrainManager->terrainSquares.size());
+
+	for (auto iter = 0; terrainManager->terrainSquares.size() > iter; iter++)
+	{
+		long newDistanceX = terrainManager->terrainSquares[iter]->shape.getPosition().x - goalPos.x;
+		long newDistanceY = terrainManager->terrainSquares[iter]->shape.getPosition().y - goalPos.y;
+
+		newDistanceX = newDistanceX * newDistanceX;
+		newDistanceY = newDistanceY * newDistanceY;
+
+		long newDistance = newDistanceX + newDistanceY;
+
+		if (terrainManager->terrainSquares[iter]->getIsPassable() == false)
+		{
+			newDistance = 2147483647;
+		}
+
+		map[iter].first = iter;
+		map[iter].second = newDistance;
+	}
+}
+
 void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManager)
 {
 	if (goalPos.x == NULL && goalPos.y == NULL)
@@ -161,10 +187,6 @@ void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManage
 		int currentDown;
 		int currentLeft;
 		int currentRight;
-
-		std::vector<std::pair<int, int>> positionsAndDistances;
-
-		positionsAndDistances.resize(terrainManager->terrainSquares.size());
 
 		pathfinderPosition = shape.getPosition();
 
@@ -199,297 +221,59 @@ void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManage
 					currentLeft = 0;
 				}
 			}
-		
-
-			int newDistanceX = terrainManager->terrainSquares[iter]->shape.getPosition().x - goalPos.x;
-			int newDistanceY = terrainManager->terrainSquares[iter]->shape.getPosition().y - goalPos.y;
-
-			newDistanceX = newDistanceX * newDistanceX;
-			newDistanceY = newDistanceY * newDistanceY;
-
-			int newDistance = newDistanceX + newDistanceY;
-
-			if (terrainManager->terrainSquares[iter]->getIsPassable() == false)
-			{
-				newDistance = 2147483647;
-			}
-
-			positionsAndDistances[iter].first = iter;
-			positionsAndDistances[iter].second = newDistance;
 		}
 
-		//while (pathfinderPosition != goalPos)
-		//{
+			//while (pathfinderPosition != goalPos)
+			//{
 			int leastDistance;
 
-			int tempArray[4] = { positionsAndDistances[currentUp].second, positionsAndDistances[currentDown].second, 
-				positionsAndDistances[currentLeft].second, positionsAndDistances[currentRight].second };
+			int tempArray[4] = { map[currentUp].second, map[currentDown].second,
+				map[currentLeft].second, map[currentRight].second };
 			int temp = 2147483647;
 
 			for (int iter = 0; iter <= 3; iter++)
 			{
-				if (tempArray[iter] < temp) 
+				if (tempArray[iter] < temp)
 				{
 					temp = tempArray[iter];
 				}
 			}
 
-			if (temp == positionsAndDistances[currentDown].second)
+			if (temp == map[currentDown].second)
 			{
 				addCommandToList("moveDown");
 				pathfinderPosition.y = pathfinderPosition.y + 20.0f;
+				//map[currentDown].second = map[currentDown].second + 100;
 			}
-			else if(temp == positionsAndDistances[currentLeft].second)
+			else if (temp == map[currentLeft].second)
 			{
 				addCommandToList("moveLeft");
 				pathfinderPosition.x = pathfinderPosition.x - 20.0f;
+				//map[currentLeft].second = map[currentLeft].second + 100;
 			}
-			else if (temp == positionsAndDistances[currentRight].second)
+			else if (temp == map[currentRight].second)
 			{
 				addCommandToList("moveRight");
 				pathfinderPosition.x = pathfinderPosition.x + 20.0f;
+				//map[currentRight].second = map[currentRight].second + 100;
 			}
-			else if (temp == positionsAndDistances[currentUp].second)
+			else if (temp == map[currentUp].second)
 			{
 				addCommandToList("moveUp");
 				pathfinderPosition.y = pathfinderPosition.y - 20.0f;
+				//map[currentUp].second = map[currentUp].second + 100;
 			}
 			else
 			{
 				Toolbox::printDebugMessage("SomethingWentWrong");
 			}
-		//}
-	}
+			//}
+		}
+	mapGenerated = false;
+	//map.clear();
 }
 
-void Soldier::resolveIfStuck(TerrainManager* terrainManager, int currentUp, int currentDown, int currentLeft, int currentRight)
-{
-	int randomMove = rand() % 4 + 1;
 
-	if (terrainManager->terrainSquares[currentUp]->getIsPassable() == false && terrainManager->terrainSquares[currentRight]->getIsPassable() == false)
-	{
-		if (randomMove == 1)
-		{
-			addCommandToList("moveDown");
-			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
-		}
-		else if (randomMove == 2)
-		{
-			addCommandToList("moveLeft");
-			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
-		}
-		else if(randomMove == 3)
-		{
-			addCommandToList("moveLeft");
-			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
-		}
-		else if(randomMove == 4)
-		{
-			addCommandToList("moveDown");
-			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
-		}
-		else
-		{
-			Toolbox::printDebugMessage("Failed to initialise random move correctly");
-		}
-	}
-
-	if (terrainManager->terrainSquares[currentUp]->getIsPassable() == false && terrainManager->terrainSquares[currentLeft]->getIsPassable() == false)
-	{
-		if (randomMove == 1)
-		{
-			addCommandToList("moveDown");
-			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
-		}
-		else if (randomMove == 2)
-		{
-			addCommandToList("moveRight");
-			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
-		}
-		else if (randomMove == 3)
-		{
-			addCommandToList("moveRight");
-			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
-		}
-		else if (randomMove == 4)
-		{
-			addCommandToList("moveDown");
-			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
-		}
-		else
-		{
-			Toolbox::printDebugMessage("Failed to initialise random move correctly");
-		}
-	}
-
-	if (terrainManager->terrainSquares[currentDown]->getIsPassable() == false && terrainManager->terrainSquares[currentRight]->getIsPassable() == false)
-	{
-		if (randomMove == 1)
-		{
-			addCommandToList("moveUp");
-			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
-		}
-		else if (randomMove == 2)
-		{
-			addCommandToList("moveLeft");
-			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
-		}
-		else if (randomMove == 3)
-		{
-			addCommandToList("moveLeft");
-			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
-		}
-		else if (randomMove == 4)
-		{
-			addCommandToList("moveUp");
-			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
-		}
-		else
-		{
-			Toolbox::printDebugMessage("Failed to initialise random move correctly");
-		}
-	}
-
-	if (terrainManager->terrainSquares[currentDown]->getIsPassable() == false && terrainManager->terrainSquares[currentLeft]->getIsPassable() == false)
-	{
-		if (randomMove == 1)
-		{
-			addCommandToList("moveUp");
-			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
-		}
-		else if (randomMove == 2)
-		{
-			addCommandToList("moveRight");
-			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
-		}
-		else if (randomMove == 3)
-		{
-			addCommandToList("moveRight");
-			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
-		}
-		else if (randomMove == 4)
-		{
-			addCommandToList("moveUp");
-			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
-		}
-		else
-		{
-			Toolbox::printDebugMessage("Failed to initialise random move correctly");
-		}
-	}
-
-	if (terrainManager->terrainSquares[currentUp]->getIsPassable() == false)
-	{
-		if (randomMove == 1)
-		{
-			addCommandToList("moveDown");
-			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
-		}
-		else if (randomMove == 2)
-		{
-			addCommandToList("moveRight");
-			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
-		}
-		else if (randomMove == 3)
-		{
-			addCommandToList("moveLeft");
-			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
-		}
-		else if (randomMove == 4)
-		{
-			addCommandToList("moveDown");
-			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
-		}
-		else
-		{
-			Toolbox::printDebugMessage("Failed to initialise random move correctly");
-		}
-	}
-
-	if (terrainManager->terrainSquares[currentDown]->getIsPassable() == false)
-	{
-		if (randomMove == 1)
-		{
-			addCommandToList("moveUp");
-			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
-		}
-		else if (randomMove == 2)
-		{
-			addCommandToList("moveRight");
-			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
-		}
-		else if (randomMove == 3)
-		{
-			addCommandToList("moveLeft");
-			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
-		}
-		else if (randomMove == 4)
-		{
-			addCommandToList("moveUp");
-			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
-		}
-		else
-		{
-			Toolbox::printDebugMessage("Failed to initialise random move correctly");
-		}
-	}
-
-	if (terrainManager->terrainSquares[currentRight]->getIsPassable() == false)
-	{
-		if (randomMove == 1)
-		{
-			addCommandToList("moveUp");
-			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
-		}
-		else if (randomMove == 2)
-		{
-			addCommandToList("moveLeft");
-			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
-		}
-		else if (randomMove == 3)
-		{
-			addCommandToList("moveLeft");
-			pathfinderPosition.x = pathfinderPosition.x - 20.0f;
-		}
-		else if (randomMove == 4)
-		{
-			addCommandToList("moveDown");
-			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
-		}
-		else
-		{
-			Toolbox::printDebugMessage("Failed to initialise random move correctly");
-		}
-	}
-
-	if (terrainManager->terrainSquares[currentLeft]->getIsPassable() == false)
-	{
-		if (randomMove == 1)
-		{
-			addCommandToList("moveUp");
-			pathfinderPosition.y = pathfinderPosition.y - 20.0f;
-		}
-		else if (randomMove == 2)
-		{
-			addCommandToList("moveRight");
-			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
-		}
-		else if (randomMove == 3)
-		{
-			addCommandToList("moveRight");
-			pathfinderPosition.x = pathfinderPosition.x + 20.0f;
-		}
-		else if (randomMove == 4)
-		{
-			addCommandToList("moveDown");
-			pathfinderPosition.y = pathfinderPosition.y + 20.0f;
-		}
-		else
-		{
-			Toolbox::printDebugMessage("Failed to initialise random move correctly");
-		}
-	}
-}
 
 void Soldier::setPosition(sf::Vector2f positionToSet)
 {
