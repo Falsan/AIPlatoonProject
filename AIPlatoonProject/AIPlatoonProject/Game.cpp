@@ -88,6 +88,7 @@ void Game::init()
 			{
 				testPlatoon->soldiers[iter2]->setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
 				testPlatoon->soldiers[iter2]->shape.setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
+				testPlatoon->soldiers[iter2]->calculateBraveryRating();
 				terrainManager->terrainSquares[iter]->setSpawn(false);
 				break;
 			}
@@ -135,24 +136,11 @@ void Game::handleInput()
 			{
 				if (testPlatoon->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[testPlatoon->soldiers[iter]->goalSquare]->shape.getPosition())
 				{
-					if (testPlatoon->soldiers[iter]->mapGenerated == false)
-					{
-						testPlatoon->soldiers[iter]->generateMapToGoal(terrainManager->terrainSquares[testPlatoon->soldiers[iter]->goalSquare]->shape.getPosition(), terrainManager);
-						testPlatoon->soldiers[iter]->mapGenerated = true;
-					}
-					if (testPlatoon->soldiers[iter]->commandList.size() > 0)
-					{
-						testPlatoon->soldiers[iter]->executeCommand(terrainManager, testPlatoon->soldiers[testPlatoon->getLeader()]);
-					}
-					else if (testPlatoon->soldiers[iter]->commandList.size() == 0)
-					{
-						
-						testPlatoon->soldiers[iter]->pathFindToGoal(terrainManager->terrainSquares[testPlatoon->soldiers[iter]->goalSquare]->shape.getPosition(), terrainManager);
-						testPlatoon->soldiers[iter]->executeCommand(terrainManager, testPlatoon->soldiers[testPlatoon->getLeader()]);
-					}
+					
+					testPlatoon->soldiers[iter]->soldierThink(terrainManager, testPlatoon->soldiers[testPlatoon->getLeader()]);
 					
 					//debugList = testSoldier->commandList;
-					testPlatoon->soldiers[iter]->clearCommandList();
+					//testPlatoon->soldiers[iter]->clearCommandList();
 					sf::sleep(sf::milliseconds(10));
 				}
 				else

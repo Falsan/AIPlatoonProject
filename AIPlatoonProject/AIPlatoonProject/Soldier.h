@@ -28,10 +28,10 @@ public:
 	void pathFindToGoal(sf::Vector2f, TerrainManager*);
 	void generateMapToGoal(sf::Vector2f, TerrainManager*);
 
-	void moveUp();
-	void moveLeft();
-	void moveDown();
-	void moveRight();
+	void moveUp(TerrainManager*);
+	void moveLeft(TerrainManager*);
+	void moveDown(TerrainManager*);
+	void moveRight(TerrainManager*);
 
 	void setState(SoldierStates);
 	int getState();
@@ -46,7 +46,11 @@ public:
 	void setLeader(bool);
 	bool getLeader();
 
+	void soldierThink(TerrainManager* terrainManager, Soldier* leader);
+
 	bool mapGenerated; //hacky way of doing it, REVISE
+
+	void calculateBraveryRating();
 
 private:
 
@@ -59,6 +63,15 @@ private:
 	int state;
 	bool pathFound;
 
+	//these bools control the general status of the soldier
+	bool gettingShotAt;
+	bool inCover;
+	bool shooting;
+	bool leaderIsDead;
+	bool fleeing;
+
+	int braveryRating; //this integer controls how likely the soldier is to obey orders under prime conditions
+	int actualBraveryRating; //this integer will be a modifyable value which controls if the soldier actually does something under stress
 	
 
 	std::vector<std::pair<int, int>> map;

@@ -12,23 +12,49 @@ Soldier::~Soldier()
 
 }
 
+void Soldier::soldierThink(TerrainManager* terrainManager, Soldier* leader)
+{
+	//if all of these are false no sensible soldier would not obey a direct order
+	if (gettingShotAt == false && shooting == false && fleeing == false && leaderIsDead == false) 
+	{
+		if (commandList.size() > 0)
+		{
+			executeCommand(terrainManager, leader);
+			pathFindToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
+		}
+		else if (commandList.size() == 0)
+		{
+			pathFindToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
+			executeCommand(terrainManager, leader);
+		}
+		//executeCommand(terrainManager, leader);
+	}
+
+	clearCommandList();
+}
+
 void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader)
 {
+	if (mapGenerated == false)
+	{
+		generateMapToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
+	}
+
 	if (commandList.front() == "moveUp")
 	{
-		moveUp();
+		moveUp(terrainManager);
 	}
 	else if (commandList.front() == "moveDown")
 	{
-		moveDown();
+		moveDown(terrainManager);
 	}
 	else if (commandList.front() == "moveLeft")
 	{
-		moveLeft();
+		moveLeft(terrainManager);
 	}
 	else if (commandList.front() == "moveRight")
 	{
-		moveRight();
+		moveRight(terrainManager);
 	}
 	else if (commandList.front() == "findCover")
 	{
@@ -164,7 +190,7 @@ void Soldier::generateMapToGoal(sf::Vector2f goalPos, TerrainManager* terrainMan
 
 		long newDistance = newDistanceX + newDistanceY;
 
-		if (terrainManager->terrainSquares[iter]->getIsPassable() == false)
+		if (terrainManager->terrainSquares[iter]->getIsPassable() == false || terrainManager->terrainSquares[iter]->getIsOccupied() == true)
 		{
 			newDistance = 2147483647;
 		}
@@ -172,6 +198,8 @@ void Soldier::generateMapToGoal(sf::Vector2f goalPos, TerrainManager* terrainMan
 		map[iter].first = iter;
 		map[iter].second = newDistance;
 	}
+
+	mapGenerated = true;
 }
 
 void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManager)
@@ -273,7 +301,16 @@ void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManage
 	//map.clear();
 }
 
+void Soldier::calculateBraveryRating() //need to run this at setup to assign bravery ratings
+{
+	braveryRating = rand() % 6 + 6;
 
+	if (isLeader)
+	{
+		braveryRating = braveryRating + 2;
+	}
+	
+}
 
 void Soldier::setPosition(sf::Vector2f positionToSet)
 {
@@ -285,7 +322,7 @@ sf::Vector2f Soldier::getPosition()
 	return position;
 }
 
-void Soldier::moveUp()
+void Soldier::moveUp(TerrainManager* terrainManager)
 {
 	if (position.y == 0.0f)
 	{
@@ -294,10 +331,23 @@ void Soldier::moveUp()
 	{
 		position.y = position.y - 20.0f;
 		shape.setPosition(sf::Vector2f(position.x, position.y));
+
+		for (int iter = 0; iter < terrainManager->terrainSquares.size(); iter++) //changes the occupied tag on the terrain
+		{
+			if (terrainManager->terrainSquares[iter]->shape.getPosition() == shape.getPosition())
+			{
+				terrainManager->terrainSquares[iter]->setIsOccupied(true);
+			}
+
+			if (terrainManager->terrainSquares[iter]->shape.getPosition().y == shape.getPosition().y - 20.0f)
+			{
+				terrainManager->terrainSquares[iter]->setIsOccupied(false);
+			}
+		}
 	}
 }
 
-void Soldier::moveDown()
+void Soldier::moveDown(TerrainManager* terrainManager)
 {
 	if (position.y == 580.0f)
 	{
@@ -307,10 +357,23 @@ void Soldier::moveDown()
 	{
 		position.y = position.y + 20.0f;
 		shape.setPosition(sf::Vector2f(position.x, position.y));
+
+		for (int iter = 0; iter < terrainManager->terrainSquares.size(); iter++)
+		{
+			if (terrainManager->terrainSquares[iter]->shape.getPosition() == shape.getPosition())
+			{
+				terrainManager->terrainSquares[iter]->setIsOccupied(true);
+			}
+
+			if (terrainManager->terrainSquares[iter]->shape.getPosition().y == shape.getPosition().y + 20.0f)
+			{
+				terrainManager->terrainSquares[iter]->setIsOccupied(false);
+			}
+		}
 	}
 }
 
-void Soldier::moveLeft()
+void Soldier::moveLeft(TerrainManager* terrainManager)
 {
 	if (position.x == 0.0f)
 	{
@@ -320,10 +383,23 @@ void Soldier::moveLeft()
 	{
 		position.x = position.x - 20.0f;
 		shape.setPosition(sf::Vector2f(position.x, position.y));
+
+		for (int iter = 0; iter < terrainManager->terrainSquares.size(); iter++)
+		{
+			if (terrainManager->terrainSquares[iter]->shape.getPosition() == shape.getPosition())
+			{
+				terrainManager->terrainSquares[iter]->setIsOccupied(true);
+			}
+
+			if (terrainManager->terrainSquares[iter]->shape.getPosition().x == shape.getPosition().x - 20.0f)
+			{
+				terrainManager->terrainSquares[iter]->setIsOccupied(false);
+			}
+		}
 	}
 }
 
-void Soldier::moveRight()
+void Soldier::moveRight(TerrainManager* terrainManager)
 {
 	if (position.x == 780.0f)
 	{
@@ -333,6 +409,19 @@ void Soldier::moveRight()
 	{
 		position.x = position.x + 20.0f;
 		shape.setPosition(sf::Vector2f(position.x, position.y));
+
+		for (int iter = 0; iter < terrainManager->terrainSquares.size(); iter++)
+		{
+			if (terrainManager->terrainSquares[iter]->shape.getPosition() == shape.getPosition())
+			{
+				terrainManager->terrainSquares[iter]->setIsOccupied(true);
+			}
+
+			if (terrainManager->terrainSquares[iter]->shape.getPosition().x == shape.getPosition().x + 20.0f)
+			{
+				terrainManager->terrainSquares[iter]->setIsOccupied(false);
+			}
+		}
 	}
 }
 
