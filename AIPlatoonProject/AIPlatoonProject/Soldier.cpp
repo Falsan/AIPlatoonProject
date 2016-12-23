@@ -5,6 +5,8 @@ Soldier::Soldier()
 	state = aliveAndWell;
 	isLeader = false;
 	mapGenerated = false;
+	setHealth(20);
+	needsToMove = false;
 }
 
 Soldier::~Soldier()
@@ -19,14 +21,15 @@ void Soldier::soldierThink(SoldierData _SD)
 	{
 		if (currentOrder == "")
 		{
-			currentOrder = "findCover";
-			commandList.push_back("findCover");
+			interpretOrders();
+			//currentOrder = "findCover";
+			//commandList.push_back("findCover");
 		}
 
 		if (commandList.size() > 0)
 		{
 			pathFindToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-			executeCommand(_SD.m_terrainManager, _SD.m_leader);
+			executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
 		}
 		else if (commandList.size() == 0)
 		{
@@ -35,10 +38,11 @@ void Soldier::soldierThink(SoldierData _SD)
 				generateMapToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
 			}
 			pathFindToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-			executeCommand(_SD.m_terrainManager, _SD.m_leader);
+			executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
 		}
 		//executeCommand(terrainManager, leader);
 	}
+
 
 	clearCommandList();
 }
@@ -49,10 +53,20 @@ void Soldier::interpretOrders()
 	{
 		if (inCover == false)
 		{
-			commandList.push_back("findCover");
+			if (needsToMove == false)
+			{
+				commandList.push_back("findCover");
+				needsToMove = true;
+			}
+			else
+			{
+
+			}
+			//currentOrder = "findCover";
 		}
 		else
 		{
+			commandList.push_back("fire");
 			//check to see if there's anything to shoot at
 			//otherwise, hunker down
 		}
@@ -67,6 +81,7 @@ void Soldier::interpretOrders()
 	}
 	else if(currentOrder == "fire")
 	{
+		commandList.push_back("fire");
 		//pick an enemy and fire
 	}
 }
@@ -74,9 +89,49 @@ void Soldier::interpretOrders()
 void Soldier::shoot(PlatoonSection* enemyPlatoon)
 {
 	//pew pew
+
+	float distance = 2000000.0f;
+	Soldier* target;
+	for (auto iter = 0; enemyPlatoon->soldiers.size() > iter; iter++)
+	{
+		
+		float newDistanceX = enemyPlatoon->soldiers[iter]->shape.getPosition().x - this->getPosition().x;
+		float newDistanceY = enemyPlatoon->soldiers[iter]->shape.getPosition().y - this->getPosition().y;
+
+		newDistanceX = newDistanceX * newDistanceX;
+		newDistanceY = newDistanceY * newDistanceY;
+
+		float newDistance = newDistanceX + newDistanceY;
+
+		//newDistance = newDistance / newDistance;
+
+		//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
+		if (newDistance < distance)
+		{
+			target = enemyPlatoon->soldiers[iter];
+			distance = newDistance;
+			//terrainManager->setGoalSquare(iter);
+			//goalSquare = iter;
+		}
+		else
+		{
+
+		}
+	}
+
+	if (distance < 1000000.0f)
+	{
+		Toolbox::printDebugMessage("Pew");
+
+	}
+	else
+	{
+		Toolbox::printDebugMessage("Hunkerdown");
+	}
 }
 
-void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader)
+
+void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader, PlatoonSection* enemyPlatoon)
 {
 	if (mapGenerated == false)
 	{
@@ -108,6 +163,10 @@ void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader)
 		else if (commandList.front() == "findCoverTogether")
 		{
 			findCoverTogether(terrainManager, leader);
+		}
+		else if (commandList.front() == "fire")
+		{
+			shoot(enemyPlatoon);
 		}
 	}
 	else
@@ -387,6 +446,15 @@ void Soldier::moveUp(TerrainManager* terrainManager)
 			if (terrainManager->terrainSquares[iter]->shape.getPosition() == shape.getPosition())
 			{
 				terrainManager->terrainSquares[iter]->setIsOccupied(true);
+
+				if (terrainManager->terrainSquares[iter]->getIsCover())
+				{
+					setIsInCover(true);
+				}
+				else
+				{
+					setIsInCover(false);
+				}
 			}
 
 			if (terrainManager->terrainSquares[iter]->shape.getPosition().y == shape.getPosition().y - 20.0f)
@@ -413,6 +481,15 @@ void Soldier::moveDown(TerrainManager* terrainManager)
 			if (terrainManager->terrainSquares[iter]->shape.getPosition() == shape.getPosition())
 			{
 				terrainManager->terrainSquares[iter]->setIsOccupied(true);
+
+				if (terrainManager->terrainSquares[iter]->getIsCover())
+				{
+					setIsInCover(true);
+				}
+				else
+				{
+					setIsInCover(false);
+				}
 			}
 
 			if (terrainManager->terrainSquares[iter]->shape.getPosition().y == shape.getPosition().y + 20.0f)
@@ -439,6 +516,15 @@ void Soldier::moveLeft(TerrainManager* terrainManager)
 			if (terrainManager->terrainSquares[iter]->shape.getPosition() == shape.getPosition())
 			{
 				terrainManager->terrainSquares[iter]->setIsOccupied(true);
+
+				if (terrainManager->terrainSquares[iter]->getIsCover())
+				{
+					setIsInCover(true);
+				}
+				else
+				{
+					setIsInCover(false);
+				}
 			}
 
 			if (terrainManager->terrainSquares[iter]->shape.getPosition().x == shape.getPosition().x - 20.0f)
@@ -465,6 +551,15 @@ void Soldier::moveRight(TerrainManager* terrainManager)
 			if (terrainManager->terrainSquares[iter]->shape.getPosition() == shape.getPosition())
 			{
 				terrainManager->terrainSquares[iter]->setIsOccupied(true);
+
+				if (terrainManager->terrainSquares[iter]->getIsCover())
+				{
+					setIsInCover(true);
+				}
+				else
+				{
+					setIsInCover(false);
+				}
 			}
 
 			if (terrainManager->terrainSquares[iter]->shape.getPosition().x == shape.getPosition().x + 20.0f)
@@ -473,6 +568,16 @@ void Soldier::moveRight(TerrainManager* terrainManager)
 			}
 		}
 	}
+}
+
+void Soldier::setIsInCover(bool toSet)
+{
+	inCover = toSet;
+}
+
+bool Soldier::getIsInCover()
+{
+	return inCover;
 }
 
 std::string Soldier::getOrder()
@@ -493,6 +598,21 @@ int Soldier::getState()
 void Soldier::setState(SoldierStates stateToSet)
 {
 	state = stateToSet;
+}
+
+void Soldier::setHealth(int healthToSet)
+{
+	health = healthToSet;
+}
+
+int Soldier::getHealth()
+{
+	return health;
+}
+
+void Soldier::reduceHealth()
+{
+	health = health - 1;
 }
 
 //OLD PATHFINDING STUFF
