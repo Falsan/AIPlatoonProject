@@ -4,7 +4,10 @@
 #include "Toolbox.h"
 #include "TerrainManager.h"
 #include "SoldierStates.h"
+#include "PlatoonSection.h"
+#include "SoldierData.h"
 
+class PlatoonSection;
 
 class Soldier
 {
@@ -32,6 +35,7 @@ public:
 	void moveLeft(TerrainManager*);
 	void moveDown(TerrainManager*);
 	void moveRight(TerrainManager*);
+	void shoot(PlatoonSection*);
 
 	void setState(SoldierStates);
 	int getState();
@@ -46,11 +50,12 @@ public:
 	void setLeader(bool);
 	bool getLeader();
 
-	void soldierThink(TerrainManager* terrainManager, Soldier* leader);
+	void soldierThink(SoldierData);
 
 	bool mapGenerated; //hacky way of doing it, REVISE
 
 	void calculateBraveryRating();
+	void interpretOrders();
 
 private:
 

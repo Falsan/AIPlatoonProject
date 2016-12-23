@@ -3,6 +3,7 @@
 #include "Toolbox.h"
 #include "Soldier.h"
 
+class Soldier;
 
 class PlatoonSection
 {

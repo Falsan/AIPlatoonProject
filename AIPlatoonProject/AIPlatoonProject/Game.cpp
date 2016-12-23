@@ -10,12 +10,17 @@ Game::Game()
 	terrainManager = new TerrainManager;
 	//testSoldier = new Soldier;
 	gameState = play;
-	testPlatoon = new PlatoonSection;
+	platoon1 = new PlatoonSection;
+	platoon2 = new PlatoonSection;
+
+	m_SD1.m_terrainManager = terrainManager;
+	m_SD2.m_terrainManager = terrainManager;
 }
 
 Game::~Game()
 {
-	delete testPlatoon;
+	delete platoon1;
+	delete platoon2;
 	//delete testSoldier;
 	delete terrainManager;
 }
@@ -65,30 +70,51 @@ void Game::init()
 	window.create(sf::VideoMode(800, 600), "Platoon AI Demo");
 	terrainManager->setUpTerrainSquares();
 
-	testPlatoon->addSoldier();
-	testPlatoon->addSoldier();
-	testPlatoon->addSoldier();
-	testPlatoon->addSoldier();
-	testPlatoon->addSoldier();
-	testPlatoon->addSoldier();
-	testPlatoon->addSoldier();
-	testPlatoon->addSoldier();
-	testPlatoon->addSoldier();
-	testPlatoon->chooseLeader();
+	platoon1->addSoldier();
+	platoon1->addSoldier();
+	platoon1->addSoldier();
+
+	platoon2->addSoldier();
+	platoon2->addSoldier();
+	platoon2->addSoldier();
+
+	platoon1->chooseLeader();
+	platoon2->chooseLeader();
+
+	m_SD1.m_leader = platoon1->soldiers[platoon1->getLeader()];
+	m_SD2.m_leader = platoon2->soldiers[platoon2->getLeader()];
+
+	m_SD1.enemyPlatoon = platoon2;
+	m_SD2.enemyPlatoon = platoon1;
 	
 
 	//testSoldier->shape.setFillColor(sf::Color::Green);
 	//testSoldier->shape.setRadius(10.0f);
 	
-	for (auto iter2 = 0; iter2 != testPlatoon->soldiers.size(); iter2++)
+	for (auto iter2 = 0; iter2 != platoon1->soldiers.size(); iter2++)
 	{
 		for (auto iter = 0; iter != terrainManager->terrainSquares.size(); iter++)
 		{
 			if (terrainManager->terrainSquares[iter]->getSpawn())
 			{
-				testPlatoon->soldiers[iter2]->setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
-				testPlatoon->soldiers[iter2]->shape.setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
-				testPlatoon->soldiers[iter2]->calculateBraveryRating();
+				platoon1->soldiers[iter2]->setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
+				platoon1->soldiers[iter2]->shape.setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
+				platoon1->soldiers[iter2]->calculateBraveryRating();
+				terrainManager->terrainSquares[iter]->setSpawn(false);
+				break;
+			}
+		}
+	}
+
+	for (auto iter2 = 0; iter2 != platoon2->soldiers.size(); iter2++)
+	{
+		for (auto iter = 0; iter != terrainManager->terrainSquares.size(); iter++)
+		{
+			if (terrainManager->terrainSquares[iter]->getSpawn())
+			{
+				platoon2->soldiers[iter2]->setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
+				platoon2->soldiers[iter2]->shape.setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
+				platoon2->soldiers[iter2]->calculateBraveryRating();
 				terrainManager->terrainSquares[iter]->setSpawn(false);
 				break;
 			}
@@ -96,8 +122,8 @@ void Game::init()
 	}
 
 	//THIS IS THE DEBUG SETTING OF GETTING COVER
-	testPlatoon->setCommand("findCoverTogether");
-	testPlatoon->giveOrders();
+	//platoon1->setCommand("findCoverTogether");
+	//testPlatoon->giveOrders();
 }
 
 void Game::tick()
@@ -114,9 +140,14 @@ void Game::draw()
 			window.draw(terrainManager->terrainSquares[iter]->shape);
 		}
 
-		for (auto iter = 0; iter != testPlatoon->soldiers.size(); iter++)
+		for (auto iter = 0; iter != platoon1->soldiers.size(); iter++)
 		{
-			window.draw(testPlatoon->soldiers[iter]->shape);
+			window.draw(platoon1->soldiers[iter]->shape);
+		}
+
+		for (auto iter = 0; iter != platoon2->soldiers.size(); iter++)
+		{
+			window.draw(platoon2->soldiers[iter]->shape);
 		}
 
 		//window.draw(testSoldier->shape);
@@ -132,12 +163,12 @@ void Game::handleInput()
 	{
 		if (gameState == play)
 		{
-			for (auto iter = 0; iter != testPlatoon->soldiers.size(); iter++)
+			for (auto iter = 0; iter != platoon1->soldiers.size(); iter++)
 			{
-				if (testPlatoon->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[testPlatoon->soldiers[iter]->goalSquare]->shape.getPosition())
+				if (platoon1->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[platoon1->soldiers[iter]->goalSquare]->shape.getPosition())
 				{
 					
-					testPlatoon->soldiers[iter]->soldierThink(terrainManager, testPlatoon->soldiers[testPlatoon->getLeader()]);
+					platoon1->soldiers[iter]->soldierThink(terrainManager, platoon1->soldiers[platoon1->getLeader()]);
 					
 					//debugList = testSoldier->commandList;
 					//testPlatoon->soldiers[iter]->clearCommandList();
@@ -147,10 +178,28 @@ void Game::handleInput()
 				{
 					Toolbox::printDebugMessage("Arrived at goal");
 					sf::sleep(sf::milliseconds(10));
-					testPlatoon->soldiers[iter]->mapGenerated = false;
+					platoon1->soldiers[iter]->mapGenerated = false;
 				}
 			}
 			
+			for (auto iter = 0; iter != platoon2->soldiers.size(); iter++)
+			{
+				if (platoon2->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[platoon2->soldiers[iter]->goalSquare]->shape.getPosition())
+				{
+
+					platoon2->soldiers[iter]->soldierThink(terrainManager, platoon1->soldiers[platoon2->getLeader()]);
+
+					//debugList = testSoldier->commandList;
+					//testPlatoon->soldiers[iter]->clearCommandList();
+					sf::sleep(sf::milliseconds(10));
+				}
+				else
+				{
+					Toolbox::printDebugMessage("Arrived at goal");
+					sf::sleep(sf::milliseconds(10));
+					platoon2->soldiers[iter]->mapGenerated = false;
+				}
+			}
 			/*
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 			{
@@ -195,16 +244,16 @@ void Game::handleInput()
 				Toolbox::printDebugMessage("End of command log for test soldier");
 
 				Toolbox::printDebugMessage("Positions of test soldiers is: ");
-				for (auto iter = 0; iter < testPlatoon->soldiers.size(); iter++)
+				for (auto iter = 0; iter < platoon1->soldiers.size(); iter++)
 				{
-					Toolbox::printDebugMessage(testPlatoon->soldiers[iter]->getPosition());
+					Toolbox::printDebugMessage(platoon1->soldiers[iter]->getPosition());
 				}
 				Toolbox::printDebugMessage("End of position: ");
 
 				Toolbox::printDebugMessage("Goals of test soldiers is: ");
-				for (auto iter = 0; iter < testPlatoon->soldiers.size(); iter++)
+				for (auto iter = 0; iter < platoon1->soldiers.size(); iter++)
 				{
-					Toolbox::printDebugMessage(testPlatoon->soldiers[iter]->goalSquare);
+					Toolbox::printDebugMessage(platoon1->soldiers[iter]->goalSquare);
 				}
 				Toolbox::printDebugMessage("End of goals: ");
 

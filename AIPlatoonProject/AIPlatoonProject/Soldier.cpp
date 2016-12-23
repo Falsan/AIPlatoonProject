@@ -12,25 +12,68 @@ Soldier::~Soldier()
 
 }
 
-void Soldier::soldierThink(TerrainManager* terrainManager, Soldier* leader)
+void Soldier::soldierThink(SoldierData _SD)
 {
 	//if all of these are false no sensible soldier would not obey a direct order
 	if (gettingShotAt == false && shooting == false && fleeing == false && leaderIsDead == false) 
 	{
+		if (currentOrder == "")
+		{
+			currentOrder = "findCover";
+			commandList.push_back("findCover");
+		}
+
 		if (commandList.size() > 0)
 		{
-			executeCommand(terrainManager, leader);
-			pathFindToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
+			pathFindToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
+			executeCommand(_SD.m_terrainManager, _SD.m_leader);
 		}
 		else if (commandList.size() == 0)
 		{
-			pathFindToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
-			executeCommand(terrainManager, leader);
+			if (mapGenerated == false)
+			{
+				generateMapToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
+			}
+			pathFindToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
+			executeCommand(_SD.m_terrainManager, _SD.m_leader);
 		}
 		//executeCommand(terrainManager, leader);
 	}
 
 	clearCommandList();
+}
+
+void Soldier::interpretOrders()
+{
+	if (currentOrder == "")
+	{
+		if (inCover == false)
+		{
+			commandList.push_back("findCover");
+		}
+		else
+		{
+			//check to see if there's anything to shoot at
+			//otherwise, hunker down
+		}
+	}
+	else if (currentOrder == "findCover")
+	{
+		commandList.push_back("findCover");
+	}
+	else if (currentOrder == "advance")
+	{
+		//run through the logic for advancing towards the enemy
+	}
+	else if(currentOrder == "fire")
+	{
+		//pick an enemy and fire
+	}
+}
+
+void Soldier::shoot(PlatoonSection* enemyPlatoon)
+{
+	//pew pew
 }
 
 void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader)
@@ -39,30 +82,37 @@ void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader)
 	{
 		generateMapToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
 	}
+	if (commandList.size() > 0)
+	{
 
-	if (commandList.front() == "moveUp")
-	{
-		moveUp(terrainManager);
+		if (commandList.front() == "moveUp")
+		{
+			moveUp(terrainManager);
+		}
+		else if (commandList.front() == "moveDown")
+		{
+			moveDown(terrainManager);
+		}
+		else if (commandList.front() == "moveLeft")
+		{
+			moveLeft(terrainManager);
+		}
+		else if (commandList.front() == "moveRight")
+		{
+			moveRight(terrainManager);
+		}
+		else if (commandList.front() == "findCover")
+		{
+			findCover(terrainManager);
+		}
+		else if (commandList.front() == "findCoverTogether")
+		{
+			findCoverTogether(terrainManager, leader);
+		}
 	}
-	else if (commandList.front() == "moveDown")
+	else
 	{
-		moveDown(terrainManager);
-	}
-	else if (commandList.front() == "moveLeft")
-	{
-		moveLeft(terrainManager);
-	}
-	else if (commandList.front() == "moveRight")
-	{
-		moveRight(terrainManager);
-	}
-	else if (commandList.front() == "findCover")
-	{
-		findCover(terrainManager);
-	}
-	else if (commandList.front() == "findCoverTogether")
-	{
-		findCoverTogether(terrainManager, leader);
+
 	}
 	
 }
