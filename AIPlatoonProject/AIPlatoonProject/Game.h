@@ -10,6 +10,7 @@
 #include "Soldier.h"
 #include "GameState.h"
 #include "PlatoonSection.h"
+#include "SoldierData.h"
 
 class Game
 {
@@ -31,12 +32,16 @@ public:
 
 	TerrainManager* terrainManager;
 
-	PlatoonSection* testPlatoon;
+	PlatoonSection* platoon1;
+	PlatoonSection* platoon2;
 
 	//Soldier* testSoldier;
 
 	sf::RenderWindow window;
 private:
+
+	SoldierData m_SD1;
+	SoldierData m_SD2;
 
 	bool logPrinted;
 	std::vector<std::string> debugList;

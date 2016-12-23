@@ -133,6 +133,7 @@
     <ClInclude Include="GameState.h" />
     <ClInclude Include="PlatoonSection.h" />
     <ClInclude Include="Soldier.h" />
+    <ClInclude Include="SoldierData.h" />
     <ClInclude Include="SoldierStates.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TerrainManager.h" />

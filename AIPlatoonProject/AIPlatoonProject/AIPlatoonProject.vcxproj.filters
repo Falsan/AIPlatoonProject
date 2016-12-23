@@ -62,5 +62,8 @@
     <ClInclude Include="SoldierStates.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SoldierData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
