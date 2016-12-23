@@ -168,7 +168,7 @@ void Game::handleInput()
 				if (platoon1->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[platoon1->soldiers[iter]->goalSquare]->shape.getPosition())
 				{
 					
-					platoon1->soldiers[iter]->soldierThink(terrainManager, platoon1->soldiers[platoon1->getLeader()]);
+					platoon1->soldiers[iter]->soldierThink(m_SD1);
 					
 					//debugList = testSoldier->commandList;
 					//testPlatoon->soldiers[iter]->clearCommandList();
@@ -176,7 +176,9 @@ void Game::handleInput()
 				}
 				else
 				{
+					platoon1->soldiers[iter]->goalSquare = NULL;
 					Toolbox::printDebugMessage("Arrived at goal");
+					platoon1->soldiers[iter]->needsToMove = false;
 					sf::sleep(sf::milliseconds(10));
 					platoon1->soldiers[iter]->mapGenerated = false;
 				}
@@ -187,7 +189,7 @@ void Game::handleInput()
 				if (platoon2->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[platoon2->soldiers[iter]->goalSquare]->shape.getPosition())
 				{
 
-					platoon2->soldiers[iter]->soldierThink(terrainManager, platoon1->soldiers[platoon2->getLeader()]);
+					platoon2->soldiers[iter]->soldierThink(m_SD2);
 
 					//debugList = testSoldier->commandList;
 					//testPlatoon->soldiers[iter]->clearCommandList();
@@ -195,7 +197,9 @@ void Game::handleInput()
 				}
 				else
 				{
+					platoon2->soldiers[iter]->goalSquare = NULL;
 					Toolbox::printDebugMessage("Arrived at goal");
+					platoon2->soldiers[iter]->needsToMove = false;
 					sf::sleep(sf::milliseconds(10));
 					platoon2->soldiers[iter]->mapGenerated = false;
 				}

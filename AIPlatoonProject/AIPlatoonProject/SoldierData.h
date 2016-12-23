@@ -4,6 +4,9 @@
 #include "Soldier.h"
 #include "PlatoonSection.h"
 
+class Soldier;
+class PlatoonSection;
+
 struct SoldierData
 {
 	TerrainManager* m_terrainManager;

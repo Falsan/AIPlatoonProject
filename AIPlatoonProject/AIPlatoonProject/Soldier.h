@@ -25,7 +25,7 @@ public:
 	std::string getOrder();
 
 	void addCommandToList(std::string);
-	void executeCommand(TerrainManager* terrainManager, Soldier* leader);
+	void executeCommand(TerrainManager* terrainManager, Soldier* leader, PlatoonSection* enemyPlatoon);
 	void clearCommandList();
 
 	void pathFindToGoal(sf::Vector2f, TerrainManager*);
@@ -50,12 +50,20 @@ public:
 	void setLeader(bool);
 	bool getLeader();
 
+	int getHealth();
+	void setHealth(int);
+	void reduceHealth();
+
 	void soldierThink(SoldierData);
 
 	bool mapGenerated; //hacky way of doing it, REVISE
 
 	void calculateBraveryRating();
 	void interpretOrders();
+	bool needsToMove;
+
+	bool getIsInCover();
+	void setIsInCover(bool);
 
 private:
 
@@ -66,8 +74,8 @@ private:
 	sf::Vector2f position;
 	sf::Texture texture;
 	int state;
-	bool pathFound;
 
+	int health;
 	//these bools control the general status of the soldier
 	bool gettingShotAt;
 	bool inCover;
