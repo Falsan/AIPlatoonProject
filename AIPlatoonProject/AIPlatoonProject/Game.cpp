@@ -165,43 +165,49 @@ void Game::handleInput()
 		{
 			for (auto iter = 0; iter != platoon1->soldiers.size(); iter++)
 			{
-				if (platoon1->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[platoon1->soldiers[iter]->goalSquare]->shape.getPosition())
+				if (platoon2->soldiers[iter]->getState() != dead)
 				{
-					
-					platoon1->soldiers[iter]->soldierThink(m_SD1);
-					
-					//debugList = testSoldier->commandList;
-					//testPlatoon->soldiers[iter]->clearCommandList();
-					sf::sleep(sf::milliseconds(10));
-				}
-				else
-				{
-					platoon1->soldiers[iter]->goalSquare = NULL;
-					Toolbox::printDebugMessage("Arrived at goal");
-					platoon1->soldiers[iter]->needsToMove = false;
-					sf::sleep(sf::milliseconds(10));
-					platoon1->soldiers[iter]->mapGenerated = false;
+					if (platoon1->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[platoon1->soldiers[iter]->goalSquare]->shape.getPosition())
+					{
+
+						platoon1->soldiers[iter]->soldierThink(m_SD1);
+
+						//debugList = testSoldier->commandList;
+						//testPlatoon->soldiers[iter]->clearCommandList();
+						sf::sleep(sf::milliseconds(10));
+					}
+					else
+					{
+						platoon1->soldiers[iter]->goalSquare = NULL;
+						Toolbox::printDebugMessage("Arrived at goal");
+						platoon1->soldiers[iter]->needsToMove = false;
+						sf::sleep(sf::milliseconds(10));
+						platoon1->soldiers[iter]->mapGenerated = false;
+					}
 				}
 			}
 			
 			for (auto iter = 0; iter != platoon2->soldiers.size(); iter++)
 			{
-				if (platoon2->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[platoon2->soldiers[iter]->goalSquare]->shape.getPosition())
+				if (platoon2->soldiers[iter]->getState() != dead)
 				{
+					if (platoon2->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[platoon2->soldiers[iter]->goalSquare]->shape.getPosition())
+					{
 
-					platoon2->soldiers[iter]->soldierThink(m_SD2);
+						platoon2->soldiers[iter]->soldierThink(m_SD2);
 
-					//debugList = testSoldier->commandList;
-					//testPlatoon->soldiers[iter]->clearCommandList();
-					sf::sleep(sf::milliseconds(10));
-				}
-				else
-				{
-					platoon2->soldiers[iter]->goalSquare = NULL;
-					Toolbox::printDebugMessage("Arrived at goal");
-					platoon2->soldiers[iter]->needsToMove = false;
-					sf::sleep(sf::milliseconds(10));
-					platoon2->soldiers[iter]->mapGenerated = false;
+						//debugList = testSoldier->commandList;
+						//testPlatoon->soldiers[iter]->clearCommandList();
+						sf::sleep(sf::milliseconds(10));
+					}
+					else
+					{
+						platoon2->soldiers[iter]->goalSquare = NULL;
+						Toolbox::printDebugMessage("Arrived at goal");
+						platoon2->soldiers[iter]->needsToMove = false;
+						sf::sleep(sf::milliseconds(10));
+						platoon2->soldiers[iter]->mapGenerated = false;
+					}
 				}
 			}
 			/*

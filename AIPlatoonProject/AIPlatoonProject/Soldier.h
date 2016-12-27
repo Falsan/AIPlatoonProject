@@ -59,14 +59,15 @@ public:
 	bool mapGenerated; //hacky way of doing it, REVISE
 
 	void calculateBraveryRating();
-	void interpretOrders();
+	void interpretOrders(PlatoonSection*);
+	void hunkerDown();
 	bool needsToMove;
 
 	bool getIsInCover();
 	void setIsInCover(bool);
 
 private:
-
+	Soldier* target;
 	bool isLeader;
 	std::vector<sf::Vector2f> pathfindPositions;
 	std::vector<int> estimatedDistances;
@@ -82,6 +83,7 @@ private:
 	bool shooting;
 	bool leaderIsDead;
 	bool fleeing;
+	bool hasTargetInRange;
 
 	int braveryRating; //this integer controls how likely the soldier is to obey orders under prime conditions
 	int actualBraveryRating; //this integer will be a modifyable value which controls if the soldier actually does something under stress
