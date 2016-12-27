@@ -11,7 +11,7 @@ Soldier::Soldier()
 
 Soldier::~Soldier()
 {
-
+	delete target;
 }
 
 void Soldier::soldierThink(SoldierData _SD)
@@ -21,7 +21,7 @@ void Soldier::soldierThink(SoldierData _SD)
 	{
 		if (currentOrder == "")
 		{
-			interpretOrders();
+			interpretOrders(_SD.enemyPlatoon);
 			//currentOrder = "findCover";
 			//commandList.push_back("findCover");
 		}
@@ -47,7 +47,7 @@ void Soldier::soldierThink(SoldierData _SD)
 	clearCommandList();
 }
 
-void Soldier::interpretOrders()
+void Soldier::interpretOrders(PlatoonSection* enemyPlatoon)
 {
 	if (currentOrder == "")
 	{
@@ -66,8 +66,25 @@ void Soldier::interpretOrders()
 		}
 		else
 		{
-			commandList.push_back("fire");
+			bool validTarget = false;
 			//check to see if there's anything to shoot at
+			for (auto iter = 0; iter < enemyPlatoon->soldiers.size(); iter++)
+			{
+				if (enemyPlatoon->soldiers[iter]->getState() == aliveAndWell)
+				{
+					validTarget = true;
+					break;
+				}
+			}
+			if (validTarget == true)
+			{
+				commandList.push_back("fire");
+			}
+			else
+			{
+				commandList.push_back("hunkerDown");
+			}
+			
 			//otherwise, hunker down
 		}
 	}
@@ -90,28 +107,35 @@ void Soldier::shoot(PlatoonSection* enemyPlatoon)
 {
 	//pew pew
 
-	float distance = 2000000.0f;
-	Soldier* target;
+	float distance = 20000000.0f;
+	target = nullptr;
+	//for(auto iter = 0; enemyPlatoon->soldiers.size() > iter; iter++)
 	for (auto iter = 0; enemyPlatoon->soldiers.size() > iter; iter++)
 	{
-		
-		float newDistanceX = enemyPlatoon->soldiers[iter]->shape.getPosition().x - this->getPosition().x;
-		float newDistanceY = enemyPlatoon->soldiers[iter]->shape.getPosition().y - this->getPosition().y;
-
-		newDistanceX = newDistanceX * newDistanceX;
-		newDistanceY = newDistanceY * newDistanceY;
-
-		float newDistance = newDistanceX + newDistanceY;
-
-		//newDistance = newDistance / newDistance;
-
-		//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
-		if (newDistance < distance)
+		if (enemyPlatoon->soldiers[iter]->getState() == aliveAndWell)
 		{
-			target = enemyPlatoon->soldiers[iter];
-			distance = newDistance;
-			//terrainManager->setGoalSquare(iter);
-			//goalSquare = iter;
+			float newDistanceX = enemyPlatoon->soldiers[iter]->shape.getPosition().x - this->getPosition().x;
+			float newDistanceY = enemyPlatoon->soldiers[iter]->shape.getPosition().y - this->getPosition().y;
+
+			newDistanceX = newDistanceX * newDistanceX;
+			newDistanceY = newDistanceY * newDistanceY;
+
+			float newDistance = newDistanceX + newDistanceY;
+
+			//newDistance = newDistance / newDistance;
+
+			//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
+			if (newDistance < distance)
+			{
+				target = enemyPlatoon->soldiers[iter];
+				distance = newDistance;
+				//terrainManager->setGoalSquare(iter);
+				//goalSquare = iter;
+			}
+			else
+			{
+
+			}
 		}
 		else
 		{
@@ -119,15 +143,43 @@ void Soldier::shoot(PlatoonSection* enemyPlatoon)
 		}
 	}
 
-	if (distance < 1000000.0f)
+	if (distance < 100000.0f)
 	{
-		Toolbox::printDebugMessage("Pew");
+		hasTargetInRange = true;
+		
 
+		//delete target;
+	}
+	
+
+	if (hasTargetInRange == true)
+	{
+		int hit = rand() % 2 + 1;
+		Toolbox::printDebugMessage("Pew");
+		if (hit == 1)//hit
+		{
+			Toolbox::printDebugMessage("Hit");
+			//target->gettingShotAt = true;
+			target->reduceHealth();
+
+			if (target->getHealth() <= 0)
+			{
+				target->setState(dead);
+				target->shape.setFillColor(sf::Color::Black);
+			}
+		}
+		else if (hit == 2)//miss
+		{
+			Toolbox::printDebugMessage("Miss");
+		}
+
+		hasTargetInRange = false;
 	}
 	else
 	{
 		Toolbox::printDebugMessage("Hunkerdown");
 	}
+	//delete target;
 }
 
 
@@ -167,6 +219,10 @@ void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader, Pl
 		else if (commandList.front() == "fire")
 		{
 			shoot(enemyPlatoon);
+		}
+		else if (commandList.front() == "hunkerDown")
+		{
+			hunkerDown();
 		}
 	}
 	else
@@ -613,6 +669,11 @@ int Soldier::getHealth()
 void Soldier::reduceHealth()
 {
 	health = health - 1;
+}
+
+void Soldier::hunkerDown()
+{
+	Toolbox::printDebugMessage("HunkerDown");
 }
 
 //OLD PATHFINDING STUFF
