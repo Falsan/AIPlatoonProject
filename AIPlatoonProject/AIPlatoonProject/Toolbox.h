@@ -15,6 +15,7 @@ public:
 	static void printDebugMessage(int);
 	static int addAHundred(int);
 	static int addATwenty(int);
+	static sf::Vector2f findMidPoint(sf::Vector2f, sf::Vector2f);
 
 private:
 

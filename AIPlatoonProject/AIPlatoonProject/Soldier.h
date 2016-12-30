@@ -36,6 +36,8 @@ public:
 	void moveDown(TerrainManager*);
 	void moveRight(TerrainManager*);
 	void shoot(PlatoonSection*);
+	void checkRange(PlatoonSection*);
+	void advance(PlatoonSection*, TerrainManager*, Soldier*);
 
 	void setState(SoldierStates);
 	int getState();
@@ -83,7 +85,7 @@ private:
 	bool shooting;
 	bool leaderIsDead;
 	bool fleeing;
-	bool hasTargetInRange;
+	bool inRange;
 
 	int braveryRating; //this integer controls how likely the soldier is to obey orders under prime conditions
 	int actualBraveryRating; //this integer will be a modifyable value which controls if the soldier actually does something under stress

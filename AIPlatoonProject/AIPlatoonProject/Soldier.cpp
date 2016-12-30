@@ -78,7 +78,15 @@ void Soldier::interpretOrders(PlatoonSection* enemyPlatoon)
 			}
 			if (validTarget == true)
 			{
-				commandList.push_back("fire");
+				checkRange(enemyPlatoon);
+				if (inRange == true)
+				{
+					commandList.push_back("fire");
+				}
+				else
+				{
+					commandList.push_back("advance");
+				}
 			}
 			else
 			{
@@ -95,6 +103,7 @@ void Soldier::interpretOrders(PlatoonSection* enemyPlatoon)
 	else if (currentOrder == "advance")
 	{
 		//run through the logic for advancing towards the enemy
+		commandList.push_back("advance");
 	}
 	else if(currentOrder == "fire")
 	{
@@ -103,10 +112,104 @@ void Soldier::interpretOrders(PlatoonSection* enemyPlatoon)
 	}
 }
 
+void Soldier::advance(PlatoonSection* enemyPlatoon, TerrainManager* terrainManager, Soldier* leader)
+{
+	Toolbox::printDebugMessage("Forward");
+	target = nullptr;
+	float distance = 20000000.0f;
+	for (auto iter = 0; enemyPlatoon->soldiers.size() > iter; iter++)
+	{
+		if (enemyPlatoon->soldiers[iter]->getState() == aliveAndWell)
+		{
+			float newDistanceX = enemyPlatoon->soldiers[iter]->shape.getPosition().x - this->getPosition().x;
+			float newDistanceY = enemyPlatoon->soldiers[iter]->shape.getPosition().y - this->getPosition().y;
+
+			newDistanceX = newDistanceX * newDistanceX;
+			newDistanceY = newDistanceY * newDistanceY;
+
+			float newDistance = newDistanceX + newDistanceY;
+
+			//newDistance = newDistance / newDistance;
+
+			//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
+			if (newDistance < distance)
+			{
+				target = enemyPlatoon->soldiers[iter];
+				distance = newDistance;
+				//terrainManager->setGoalSquare(iter);
+				//goalSquare = iter;
+			}
+			else
+			{
+
+			}
+		}
+		else
+		{
+
+		}
+	}
+
+	sf::Vector2f midpoint = Toolbox::findMidPoint(this->getPosition(), target->getPosition());
+
+	clearCommandList();
+	generateMapToGoal(midpoint, terrainManager);
+	pathFindToGoal(midpoint, terrainManager);
+	executeCommand(terrainManager, leader, enemyPlatoon);
+}
+
+void Soldier::checkRange(PlatoonSection* enemyPlatoon)
+{
+	float distance = 20000000.0f;
+	for (auto iter = 0; enemyPlatoon->soldiers.size() > iter; iter++)
+	{
+		if (enemyPlatoon->soldiers[iter]->getState() == aliveAndWell)
+		{
+			float newDistanceX = enemyPlatoon->soldiers[iter]->shape.getPosition().x - this->getPosition().x;
+			float newDistanceY = enemyPlatoon->soldiers[iter]->shape.getPosition().y - this->getPosition().y;
+
+			newDistanceX = newDistanceX * newDistanceX;
+			newDistanceY = newDistanceY * newDistanceY;
+
+			float newDistance = newDistanceX + newDistanceY;
+
+			//newDistance = newDistance / newDistance;
+
+			//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
+			if (newDistance < distance)
+			{
+				//target = enemyPlatoon->soldiers[iter];
+				distance = newDistance;
+				//terrainManager->setGoalSquare(iter);
+				//goalSquare = iter;
+			}
+			else
+			{
+
+			}
+		}
+		else
+		{
+
+		}
+	}
+
+	if (distance < 100000.0f)
+	{
+		inRange = true;
+
+		//delete target;
+	}
+	else
+	{
+		inRange = false;
+	}
+}
+
 void Soldier::shoot(PlatoonSection* enemyPlatoon)
 {
 	//pew pew
-
+	bool hasTargetInRange = false;
 	float distance = 20000000.0f;
 	target = nullptr;
 	//for(auto iter = 0; enemyPlatoon->soldiers.size() > iter; iter++)
@@ -143,12 +246,17 @@ void Soldier::shoot(PlatoonSection* enemyPlatoon)
 		}
 	}
 
-	if (distance < 100000.0f)
+	if (distance < 10000.0f)
 	{
 		hasTargetInRange = true;
-		
+		inRange = true;
 
 		//delete target;
+	}
+	else
+	{
+		hasTargetInRange = false;
+		inRange = false;
 	}
 	
 
@@ -174,6 +282,10 @@ void Soldier::shoot(PlatoonSection* enemyPlatoon)
 		}
 
 		hasTargetInRange = false;
+	}
+	else if(hasTargetInRange == false)
+	{
+
 	}
 	else
 	{
@@ -223,6 +335,10 @@ void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader, Pl
 		else if (commandList.front() == "hunkerDown")
 		{
 			hunkerDown();
+		}
+		else if (commandList.front() == "advance")
+		{
+			advance(enemyPlatoon, terrainManager, leader);
 		}
 	}
 	else
