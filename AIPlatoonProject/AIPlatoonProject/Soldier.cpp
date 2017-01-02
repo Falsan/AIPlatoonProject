@@ -49,66 +49,47 @@ void Soldier::soldierThink(SoldierData _SD)
 
 void Soldier::interpretOrders(PlatoonSection* enemyPlatoon)
 {
-	if (currentOrder == "")
+	if (inCover == false)
 	{
-		if (inCover == false)
+		if (needsToMove == false)
 		{
-			if (needsToMove == false)
-			{
-				commandList.push_back("findCover");
-				needsToMove = true;
-			}
-			else
-			{
-
-			}
-			//currentOrder = "findCover";
+			commandList.push_back("findCover");
+			needsToMove = true;
 		}
 		else
 		{
-			bool validTarget = false;
-			//check to see if there's anything to shoot at
-			for (auto iter = 0; iter < enemyPlatoon->soldiers.size(); iter++)
+
+		}
+		//currentOrder = "findCover";
+	}
+	else
+	{
+		bool validTarget = false;
+		//check to see if there's anything to shoot at
+		for (auto iter = 0; iter < enemyPlatoon->soldiers.size(); iter++)
+		{
+			if (enemyPlatoon->soldiers[iter]->getState() == aliveAndWell)
 			{
-				if (enemyPlatoon->soldiers[iter]->getState() == aliveAndWell)
-				{
-					validTarget = true;
-					break;
-				}
+				validTarget = true;
+				break;
 			}
-			if (validTarget == true)
+		}
+		if (validTarget == true)
+		{
+			checkRange(enemyPlatoon);
+			if (inRange == true)
 			{
-				checkRange(enemyPlatoon);
-				if (inRange == true)
-				{
-					commandList.push_back("fire");
-				}
-				else
-				{
-					commandList.push_back("advance");
-				}
+				commandList.push_back("fire");
 			}
 			else
 			{
-				commandList.push_back("hunkerDown");
+				commandList.push_back("advance");
 			}
-			
-			//otherwise, hunker down
 		}
-	}
-	else if (currentOrder == "findCover")
-	{
-		commandList.push_back("findCover");
-	}
-	else if (currentOrder == "advance")
-	{
-		//run through the logic for advancing towards the enemy
-		commandList.push_back("advance");
-	}
-	else if(currentOrder == "fire")
-	{
-		commandList.push_back("fire");
-		//pick an enemy and fire
+		else
+		{
+			commandList.push_back("hunkerDown");
+		}
 	}
 }
 
@@ -156,6 +137,7 @@ void Soldier::advance(PlatoonSection* enemyPlatoon, TerrainManager* terrainManag
 	generateMapToGoal(midpoint, terrainManager);
 	pathFindToGoal(midpoint, terrainManager);
 	executeCommand(terrainManager, leader, enemyPlatoon);
+	//clearCommandList();
 }
 
 void Soldier::checkRange(PlatoonSection* enemyPlatoon)
@@ -246,7 +228,7 @@ void Soldier::shoot(PlatoonSection* enemyPlatoon)
 		}
 	}
 
-	if (distance < 10000.0f)
+	if (distance < 100000.0f)
 	{
 		hasTargetInRange = true;
 		inRange = true;
@@ -285,7 +267,7 @@ void Soldier::shoot(PlatoonSection* enemyPlatoon)
 	}
 	else if(hasTargetInRange == false)
 	{
-
+		inRange = false;
 	}
 	else
 	{
