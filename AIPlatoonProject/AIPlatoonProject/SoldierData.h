@@ -6,6 +6,7 @@
 
 class Soldier;
 class PlatoonSection;
+class TerrainManager;
 
 struct SoldierData
 {
