@@ -47,7 +47,7 @@ void Soldier::soldierThink(SoldierData _SD)
 	clearCommandList();
 }
 
-void Soldier::interpretOrders(PlatoonSection* enemyPlatoon)
+void Soldier::interpretOrders(Platoon* enemyPlatoon)
 {
 	if (inCover == false)
 	{
@@ -66,12 +66,15 @@ void Soldier::interpretOrders(PlatoonSection* enemyPlatoon)
 	{
 		bool validTarget = false;
 		//check to see if there's anything to shoot at
-		for (auto iter = 0; iter < enemyPlatoon->soldiers.size(); iter++)
+		for (auto iter2 = 0; iter2 != enemyPlatoon->platoonSections.size(); iter2++)
 		{
-			if (enemyPlatoon->soldiers[iter]->getState() == aliveAndWell)
+			for (auto iter = 0; iter < enemyPlatoon->platoonSections[iter]->soldiers.size(); iter++)
 			{
-				validTarget = true;
-				break;
+				if (enemyPlatoon->platoonSections[iter2]->soldiers[iter]->getState() == aliveAndWell)
+				{
+					validTarget = true;
+					break;
+				}
 			}
 		}
 		if (validTarget == true)
@@ -93,41 +96,44 @@ void Soldier::interpretOrders(PlatoonSection* enemyPlatoon)
 	}
 }
 
-void Soldier::advance(PlatoonSection* enemyPlatoon, TerrainManager* terrainManager, Soldier* leader)
+void Soldier::advance(Platoon* enemyPlatoon, TerrainManager* terrainManager, Soldier* leader)
 {
 	Toolbox::printDebugMessage("Forward");
 	target = nullptr;
 	float distance = 20000000.0f;
-	for (auto iter = 0; enemyPlatoon->soldiers.size() > iter; iter++)
+	for (auto iter2 = 0; iter2 != enemyPlatoon->platoonSections.size(); iter2++)
 	{
-		if (enemyPlatoon->soldiers[iter]->getState() == aliveAndWell)
+		for (auto iter = 0; enemyPlatoon->platoonSections[iter2]->soldiers.size() > iter; iter++)
 		{
-			float newDistanceX = enemyPlatoon->soldiers[iter]->shape.getPosition().x - this->getPosition().x;
-			float newDistanceY = enemyPlatoon->soldiers[iter]->shape.getPosition().y - this->getPosition().y;
-
-			newDistanceX = newDistanceX * newDistanceX;
-			newDistanceY = newDistanceY * newDistanceY;
-
-			float newDistance = newDistanceX + newDistanceY;
-
-			//newDistance = newDistance / newDistance;
-
-			//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
-			if (newDistance < distance)
+			if (enemyPlatoon->platoonSections[iter2]->soldiers[iter]->getState() == aliveAndWell)
 			{
-				target = enemyPlatoon->soldiers[iter];
-				distance = newDistance;
-				//terrainManager->setGoalSquare(iter);
-				//goalSquare = iter;
+				float newDistanceX = enemyPlatoon->platoonSections[iter2]->soldiers[iter]->shape.getPosition().x - this->getPosition().x;
+				float newDistanceY = enemyPlatoon->platoonSections[iter2]->soldiers[iter]->shape.getPosition().y - this->getPosition().y;
+
+				newDistanceX = newDistanceX * newDistanceX;
+				newDistanceY = newDistanceY * newDistanceY;
+
+				float newDistance = newDistanceX + newDistanceY;
+
+				//newDistance = newDistance / newDistance;
+
+				//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
+				if (newDistance < distance)
+				{
+					target = enemyPlatoon->platoonSections[iter2]->soldiers[iter];
+					distance = newDistance;
+					//terrainManager->setGoalSquare(iter);
+					//goalSquare = iter;
+				}
+				else
+				{
+
+				}
 			}
 			else
 			{
 
 			}
-		}
-		else
-		{
-
 		}
 	}
 
@@ -140,7 +146,7 @@ void Soldier::advance(PlatoonSection* enemyPlatoon, TerrainManager* terrainManag
 	//clearCommandList();
 }
 
-void Soldier::checkRange(PlatoonSection* enemyPlatoon)
+void Soldier::checkRange(Platoon* enemyPlatoon)
 {
 	float distance = Toolbox::findDistanceOfEnemies(enemyPlatoon, this);
 
@@ -156,7 +162,7 @@ void Soldier::checkRange(PlatoonSection* enemyPlatoon)
 	}
 }
 
-void Soldier::shoot(PlatoonSection* enemyPlatoon)
+void Soldier::shoot(Platoon* enemyPlatoon)
 {
 	//pew pew
 	bool hasTargetInRange = false;
@@ -215,7 +221,7 @@ void Soldier::shoot(PlatoonSection* enemyPlatoon)
 }
 
 
-void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader, PlatoonSection* enemyPlatoon)
+void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader, Platoon* enemyPlatoon)
 {
 	if (mapGenerated == false)
 	{

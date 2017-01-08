@@ -10,8 +10,8 @@ Game::Game()
 	terrainManager = new TerrainManager;
 	//testSoldier = new Soldier;
 	gameState = play;
-	platoon1 = new PlatoonSection;
-	platoon2 = new PlatoonSection;
+	platoon1 = new Platoon;
+	platoon2 = new Platoon;
 
 	m_SD1.m_terrainManager = terrainManager;
 	m_SD2.m_terrainManager = terrainManager;
@@ -70,19 +70,11 @@ void Game::init()
 	window.create(sf::VideoMode(800, 600), "Platoon AI Demo");
 	terrainManager->setUpTerrainSquares();
 
-	platoon1->addSoldier();
-	platoon1->addSoldier();
-	platoon1->addSoldier();
+	platoon1->createPlatoon();
+	platoon2->createPlatoon();
 
-	platoon2->addSoldier();
-	platoon2->addSoldier();
-	platoon2->addSoldier();
-
-	platoon1->chooseLeader();
-	platoon2->chooseLeader();
-
-	m_SD1.m_leader = platoon1->soldiers[platoon1->getLeader()];
-	m_SD2.m_leader = platoon2->soldiers[platoon2->getLeader()];
+	//m_SD1.m_leader = platoon1->soldiers[platoon1->getLeader()];
+	//m_SD2.m_leader = platoon2->soldiers[platoon2->getLeader()];
 
 	m_SD1.enemyPlatoon = platoon2;
 	m_SD2.enemyPlatoon = platoon1;
@@ -90,33 +82,38 @@ void Game::init()
 
 	//testSoldier->shape.setFillColor(sf::Color::Green);
 	//testSoldier->shape.setRadius(10.0f);
-	
-	for (auto iter2 = 0; iter2 != platoon1->soldiers.size(); iter2++)
+	for (auto iter3 = 0; iter3 != platoon1->platoonSections.size(); iter3++)
 	{
-		for (auto iter = 0; iter != terrainManager->terrainSquares.size(); iter++)
+		for (auto iter2 = 0; iter2 != platoon1->platoonSections[iter3]->soldiers.size(); iter2++)
 		{
-			if (terrainManager->terrainSquares[iter]->getSpawn())
+			for (auto iter = 0; iter != terrainManager->terrainSquares.size(); iter++)
 			{
-				platoon1->soldiers[iter2]->setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
-				platoon1->soldiers[iter2]->shape.setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
-				platoon1->soldiers[iter2]->calculateBraveryRating();
-				terrainManager->terrainSquares[iter]->setSpawn(false);
-				break;
+				if (terrainManager->terrainSquares[iter]->getSpawn())
+				{
+					platoon1->platoonSections[iter3]->soldiers[iter2]->setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
+					platoon1->platoonSections[iter3]->soldiers[iter2]->shape.setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
+					platoon1->platoonSections[iter3]->soldiers[iter2]->calculateBraveryRating();
+					terrainManager->terrainSquares[iter]->setSpawn(false);
+					break;
+				}
 			}
 		}
 	}
 
-	for (auto iter2 = 0; iter2 != platoon2->soldiers.size(); iter2++)
+	for (auto iter3 = 0; iter3 != platoon2->platoonSections.size(); iter3++)
 	{
-		for (auto iter = 0; iter != terrainManager->terrainSquares.size(); iter++)
+		for (auto iter2 = 0; iter2 != platoon2->platoonSections[iter3]->soldiers.size(); iter2++)
 		{
-			if (terrainManager->terrainSquares[iter]->getSpawn())
+			for (auto iter = 0; iter != terrainManager->terrainSquares.size(); iter++)
 			{
-				platoon2->soldiers[iter2]->setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
-				platoon2->soldiers[iter2]->shape.setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
-				platoon2->soldiers[iter2]->calculateBraveryRating();
-				terrainManager->terrainSquares[iter]->setSpawn(false);
-				break;
+				if (terrainManager->terrainSquares[iter]->getSpawn())
+				{
+					platoon2->platoonSections[iter3]->soldiers[iter2]->setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
+					platoon2->platoonSections[iter3]->soldiers[iter2]->shape.setPosition(terrainManager->terrainSquares[iter]->shape.getPosition());
+					platoon2->platoonSections[iter3]->soldiers[iter2]->calculateBraveryRating();
+					terrainManager->terrainSquares[iter]->setSpawn(false);
+					break;
+				}
 			}
 		}
 	}
@@ -139,15 +136,21 @@ void Game::draw()
 		{
 			window.draw(terrainManager->terrainSquares[iter]->shape);
 		}
-
-		for (auto iter = 0; iter != platoon1->soldiers.size(); iter++)
+		
+		for (auto iter3 = 0; iter3 != platoon1->platoonSections.size(); iter3++)
 		{
-			window.draw(platoon1->soldiers[iter]->shape);
+			for (auto iter2 = 0; iter2 != platoon1->platoonSections[iter3]->soldiers.size(); iter2++)
+			{
+				window.draw(platoon1->platoonSections[iter3]->soldiers[iter2]->shape);
+			}
 		}
 
-		for (auto iter = 0; iter != platoon2->soldiers.size(); iter++)
+		for (auto iter3 = 0; iter3 != platoon2->platoonSections.size(); iter3++)
 		{
-			window.draw(platoon2->soldiers[iter]->shape);
+			for (auto iter2 = 0; iter2 != platoon2->platoonSections[iter3]->soldiers.size(); iter2++)
+			{
+				window.draw(platoon2->platoonSections[iter3]->soldiers[iter2]->shape);
+			}
 		}
 
 		//window.draw(testSoldier->shape);
@@ -163,50 +166,61 @@ void Game::handleInput()
 	{
 		if (gameState == play)
 		{
-			for (auto iter = 0; iter != platoon1->soldiers.size(); iter++)
+			for (auto iter2 = 0; iter2 != platoon1->platoonSections.size(); iter2++)
 			{
-				if (platoon2->soldiers[iter]->getState() != dead)
+				m_SD1.m_platoonSection = platoon1->platoonSections[iter2];
+
+				for (auto iter = 0; iter != platoon1->platoonSections[iter2]->soldiers.size(); iter2++)
 				{
-					if (platoon1->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[platoon1->soldiers[iter]->goalSquare]->shape.getPosition())
+					if (platoon1->platoonSections[iter2]->soldiers[iter]->getState() != dead)
 					{
+						if (platoon1->platoonSections[iter2]->soldiers[iter]->shape.getPosition() !=
+							terrainManager->terrainSquares[platoon1->platoonSections[iter2]->soldiers[iter]->goalSquare]->shape.getPosition())
+						{
 
-						platoon1->soldiers[iter]->soldierThink(m_SD1);
+							platoon1->platoonSections[iter2]->soldiers[iter]->soldierThink(m_SD1);
 
-						//debugList = testSoldier->commandList;
-						//testPlatoon->soldiers[iter]->clearCommandList();
-						sf::sleep(sf::milliseconds(10));
-					}
-					else
-					{
-						platoon1->soldiers[iter]->goalSquare = NULL;
-						Toolbox::printDebugMessage("Arrived at goal");
-						platoon1->soldiers[iter]->needsToMove = false;
-						sf::sleep(sf::milliseconds(10));
-						platoon1->soldiers[iter]->mapGenerated = false;
+							//debugList = testSoldier->commandList;
+							//testPlatoon->soldiers[iter]->clearCommandList();
+							sf::sleep(sf::milliseconds(10));
+						}
+						else
+						{
+							platoon1->platoonSections[iter2]->soldiers[iter]->goalSquare = NULL;
+							Toolbox::printDebugMessage("Arrived at goal");
+							platoon1->platoonSections[iter2]->soldiers[iter]->needsToMove = false;
+							sf::sleep(sf::milliseconds(10));
+							platoon1->platoonSections[iter2]->soldiers[iter]->mapGenerated = false;
+						}
 					}
 				}
 			}
 			
-			for (auto iter = 0; iter != platoon2->soldiers.size(); iter++)
+			for (auto iter2 = 0; iter2 != platoon2->platoonSections.size(); iter2++)
 			{
-				if (platoon2->soldiers[iter]->getState() != dead)
+				m_SD2.m_platoonSection = platoon1->platoonSections[iter2];
+				for (auto iter = 0; iter != platoon2->platoonSections[iter2]->soldiers.size(); iter2++)
 				{
-					if (platoon2->soldiers[iter]->shape.getPosition() != terrainManager->terrainSquares[platoon2->soldiers[iter]->goalSquare]->shape.getPosition())
+					if (platoon2->platoonSections[iter2]->soldiers[iter]->getState() != dead)
 					{
+						if (platoon2->platoonSections[iter2]->soldiers[iter]->shape.getPosition() !=
+							terrainManager->terrainSquares[platoon2->platoonSections[iter2]->soldiers[iter]->goalSquare]->shape.getPosition())
+						{
 
-						platoon2->soldiers[iter]->soldierThink(m_SD2);
+							platoon2->platoonSections[iter2]->soldiers[iter]->soldierThink(m_SD2);
 
-						//debugList = testSoldier->commandList;
-						//testPlatoon->soldiers[iter]->clearCommandList();
-						sf::sleep(sf::milliseconds(10));
-					}
-					else
-					{
-						platoon2->soldiers[iter]->goalSquare = NULL;
-						Toolbox::printDebugMessage("Arrived at goal");
-						platoon2->soldiers[iter]->needsToMove = false;
-						sf::sleep(sf::milliseconds(10));
-						platoon2->soldiers[iter]->mapGenerated = false;
+							//debugList = testSoldier->commandList;
+							//testPlatoon->soldiers[iter]->clearCommandList();
+							sf::sleep(sf::milliseconds(10));
+						}
+						else
+						{
+							platoon2->platoonSections[iter2]->soldiers[iter]->goalSquare = NULL;
+							Toolbox::printDebugMessage("Arrived at goal");
+							platoon2->platoonSections[iter2]->soldiers[iter]->needsToMove = false;
+							sf::sleep(sf::milliseconds(10));
+							platoon2->platoonSections[iter2]->soldiers[iter]->mapGenerated = false;
+						}
 					}
 				}
 			}
@@ -244,7 +258,7 @@ void Game::handleInput()
 		{
 			if (logPrinted == false)
 			{
-				Toolbox::printDebugMessage("Start of command log for test soldier");
+				/*Toolbox::printDebugMessage("Start of command log for test soldier");
 
 				for (auto iter = 0; iter != debugList.size(); iter++)
 				{
@@ -269,7 +283,7 @@ void Game::handleInput()
 
 				//Toolbox::printDebugMessage("Goal square is: ");
 				//Toolbox::printDebugMessage(terrainManager->terrainSquares[testPlatoon->soldiers[iter]->goalSquare]->shape.getPosition());
-				//Toolbox::printDebugMessage("End of goal square: ");
+				//Toolbox::printDebugMessage("End of goal square: ");*/
 
 				logPrinted = true;
 			}

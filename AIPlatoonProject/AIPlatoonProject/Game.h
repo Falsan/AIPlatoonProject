@@ -11,6 +11,7 @@
 #include "GameState.h"
 #include "PlatoonSection.h"
 #include "SoldierData.h"
+#include "Platoon.h"
 
 class Game
 {
@@ -32,8 +33,8 @@ public:
 
 	TerrainManager* terrainManager;
 
-	PlatoonSection* platoon1;
-	PlatoonSection* platoon2;
+	Platoon* platoon1;
+	Platoon* platoon2;
 
 	//Soldier* testSoldier;
 

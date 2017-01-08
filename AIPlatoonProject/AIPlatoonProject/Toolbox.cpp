@@ -62,83 +62,90 @@ sf::Vector2f Toolbox::findMidPoint(sf::Vector2f firstVector, sf::Vector2f second
 	return midpoint;
 }
 
-float Toolbox::findDistanceOfEnemies(PlatoonSection* enemyPlatoon, Soldier* self)
+float Toolbox::findDistanceOfEnemies(Platoon* enemyPlatoon, Soldier* self)
 {
 	float distance = 20000000.0f;
-	for (auto iter = 0; enemyPlatoon->soldiers.size() > iter; iter++)
+	
+	for (auto iter2 = 0; enemyPlatoon->platoonSections.size() > iter2; iter2++)
 	{
-		if (enemyPlatoon->soldiers[iter]->getState() == aliveAndWell)
+		for (auto iter = 0; enemyPlatoon->platoonSections[iter2]->soldiers.size() > iter; iter++)
 		{
-			float newDistanceX = enemyPlatoon->soldiers[iter]->shape.getPosition().x - self->getPosition().x;
-			float newDistanceY = enemyPlatoon->soldiers[iter]->shape.getPosition().y - self->getPosition().y;
-
-			newDistanceX = newDistanceX * newDistanceX;
-			newDistanceY = newDistanceY * newDistanceY;
-
-			float newDistance = newDistanceX + newDistanceY;
-
-			//newDistance = newDistance / newDistance;
-
-			//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
-			if (newDistance < distance)
+			if (enemyPlatoon->platoonSections[iter2]->soldiers[iter]->getState() == aliveAndWell)
 			{
-				//target = enemyPlatoon->soldiers[iter];
-				distance = newDistance;
-				//terrainManager->setGoalSquare(iter);
-				//goalSquare = iter;
+				float newDistanceX = enemyPlatoon->platoonSections[iter2]->soldiers[iter]->shape.getPosition().x - self->getPosition().x;
+				float newDistanceY = enemyPlatoon->platoonSections[iter2]->soldiers[iter]->shape.getPosition().y - self->getPosition().y;
+
+				newDistanceX = newDistanceX * newDistanceX;
+				newDistanceY = newDistanceY * newDistanceY;
+
+				float newDistance = newDistanceX + newDistanceY;
+
+				//newDistance = newDistance / newDistance;
+
+				//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
+				if (newDistance < distance)
+				{
+					//target = enemyPlatoon->soldiers[iter];
+					distance = newDistance;
+					//terrainManager->setGoalSquare(iter);
+					//goalSquare = iter;
+				}
+				else
+				{
+
+				}
 			}
 			else
 			{
 
 			}
-		}
-		else
-		{
-
 		}
 	}
 
 	return distance;
 }
 
-std::pair<float, Soldier*> Toolbox::findDistanceOfEnemiesAndTarget(PlatoonSection* enemyPlatoon, Soldier* self)
+std::pair<float, Soldier*> Toolbox::findDistanceOfEnemiesAndTarget(Platoon* enemyPlatoon, Soldier* self)
 {
 	float distance = 20000000.0f;
 	Soldier* target = nullptr;
 	//for(auto iter = 0; enemyPlatoon->soldiers.size() > iter; iter++)
-	for (auto iter = 0; enemyPlatoon->soldiers.size() > iter; iter++)
+
+	for (auto iter2 = 0; enemyPlatoon->platoonSections.size() > iter2; iter2++)
 	{
-		if (enemyPlatoon->soldiers[iter]->getState() == aliveAndWell)
+		for (auto iter = 0; enemyPlatoon->platoonSections[iter2]->soldiers.size() > iter; iter++)
 		{
-			float newDistanceX = enemyPlatoon->soldiers[iter]->shape.getPosition().x - self->getPosition().x;
-			float newDistanceY = enemyPlatoon->soldiers[iter]->shape.getPosition().y - self->getPosition().y;
-
-			newDistanceX = newDistanceX * newDistanceX;
-			newDistanceY = newDistanceY * newDistanceY;
-
-			float newDistance = newDistanceX + newDistanceY;
-
-			//newDistance = newDistance / newDistance;
-
-			//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
-			if (newDistance < distance)
+			if (enemyPlatoon->platoonSections[iter2]->soldiers[iter]->getState() == aliveAndWell)
 			{
-				target = enemyPlatoon->soldiers[iter];
-				distance = newDistance;
-				//terrainManager->setGoalSquare(iter);
-				//goalSquare = iter;
+				float newDistanceX = enemyPlatoon->platoonSections[iter2]->soldiers[iter]->shape.getPosition().x - self->getPosition().x;
+				float newDistanceY = enemyPlatoon->platoonSections[iter2]->soldiers[iter]->shape.getPosition().y - self->getPosition().y;
+
+				newDistanceX = newDistanceX * newDistanceX;
+				newDistanceY = newDistanceY * newDistanceY;
+
+				float newDistance = newDistanceX + newDistanceY;
+
+				//newDistance = newDistance / newDistance;
+
+				//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
+				if (newDistance < distance)
+				{
+					target = enemyPlatoon->platoonSections[iter2]->soldiers[iter];
+					distance = newDistance;
+					//terrainManager->setGoalSquare(iter);
+					//goalSquare = iter;
+				}
+				else
+				{
+
+				}
 			}
 			else
 			{
 
 			}
 		}
-		else
-		{
-
-		}
 	}
-
 	std::pair<float, Soldier*> pair;
 	pair.first = distance;
 	pair.second = target;
