@@ -66,9 +66,9 @@ void Soldier::interpretOrders(Platoon* enemyPlatoon)
 	{
 		bool validTarget = false;
 		//check to see if there's anything to shoot at
-		for (auto iter2 = 0; iter2 != enemyPlatoon->platoonSections.size(); iter2++)
+		for (auto iter2 = 0; iter2 != enemyPlatoon->platoonSections.size(); iter2++) 
 		{
-			for (auto iter = 0; iter < enemyPlatoon->platoonSections[iter]->soldiers.size(); iter++)
+			for (auto iter = 0; iter < enemyPlatoon->platoonSections[iter2]->soldiers.size(); iter++)
 			{
 				if (enemyPlatoon->platoonSections[iter2]->soldiers[iter]->getState() == aliveAndWell)
 				{
