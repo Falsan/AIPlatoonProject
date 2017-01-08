@@ -36,6 +36,9 @@
     <ClCompile Include="PlatoonSection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Platoon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -63,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SoldierData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Platoon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

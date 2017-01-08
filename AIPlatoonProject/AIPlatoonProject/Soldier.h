@@ -25,7 +25,7 @@ public:
 	std::string getOrder();
 
 	void addCommandToList(std::string);
-	void executeCommand(TerrainManager* terrainManager, Soldier* leader, PlatoonSection* enemyPlatoon);
+	void executeCommand(TerrainManager* terrainManager, Soldier* leader, Platoon* enemyPlatoon);
 	void clearCommandList();
 
 	void pathFindToGoal(sf::Vector2f, TerrainManager*);
@@ -35,9 +35,9 @@ public:
 	void moveLeft(TerrainManager*);
 	void moveDown(TerrainManager*);
 	void moveRight(TerrainManager*);
-	void shoot(PlatoonSection*);
-	void checkRange(PlatoonSection*);
-	void advance(PlatoonSection*, TerrainManager*, Soldier*);
+	void shoot(Platoon*);
+	void checkRange(Platoon*);
+	void advance(Platoon*, TerrainManager*, Soldier*);
 
 	void setState(SoldierStates);
 	int getState();
@@ -61,7 +61,7 @@ public:
 	bool mapGenerated; //hacky way of doing it, REVISE
 
 	void calculateBraveryRating();
-	void interpretOrders(PlatoonSection*);
+	void interpretOrders(Platoon*);
 	void hunkerDown();
 	bool needsToMove;
 
