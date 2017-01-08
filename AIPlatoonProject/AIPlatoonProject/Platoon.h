@@ -14,6 +14,10 @@ public:
 
 	void createPlatoonSection();
 	void createPlatoon();
+	void assignTeam(int);
+
+
+	int platoonTeam;
 private:
 
 	

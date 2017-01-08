@@ -16,13 +16,14 @@ void PlatoonSection::chooseLeader()
 {
 	leader = rand() % soldiers.size();
 	soldiers[leader]->setLeader(true);
+	soldiers[leader]->shape.setFillColor(teamLeaderColour);
 }
 
 void PlatoonSection::addSoldier()
 {
 	soldiers.push_back(new Soldier);
 
-	soldiers.back()->shape.setFillColor(sf::Color::Green);
+	soldiers.back()->shape.setFillColor(teamColour);
 	soldiers.back()->shape.setRadius(10.0f);
 }
 

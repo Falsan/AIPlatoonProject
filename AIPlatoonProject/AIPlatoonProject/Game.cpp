@@ -69,7 +69,8 @@ void Game::init()
 {
 	window.create(sf::VideoMode(800, 600), "Platoon AI Demo");
 	terrainManager->setUpTerrainSquares();
-
+	platoon1->assignTeam(1);
+	platoon2->assignTeam(2);
 	platoon1->createPlatoon();
 	platoon2->createPlatoon();
 
@@ -168,28 +169,27 @@ void Game::handleInput()
 		{
 			for (auto iter2 = 0; iter2 != platoon1->platoonSections.size(); iter2++)
 			{
-				m_SD1.m_platoonSection = platoon1->platoonSections[iter2];
 
-				for (auto iter = 0; iter != platoon1->platoonSections[iter2]->soldiers.size(); iter2++)
+				for (auto iter = 0; iter != platoon1->platoonSections[iter2]->soldiers.size(); iter++)
 				{
 					if (platoon1->platoonSections[iter2]->soldiers[iter]->getState() != dead)
 					{
 						if (platoon1->platoonSections[iter2]->soldiers[iter]->shape.getPosition() !=
 							terrainManager->terrainSquares[platoon1->platoonSections[iter2]->soldiers[iter]->goalSquare]->shape.getPosition())
 						{
-
+							m_SD1.m_platoonSection = platoon1->platoonSections[iter2];
 							platoon1->platoonSections[iter2]->soldiers[iter]->soldierThink(m_SD1);
 
 							//debugList = testSoldier->commandList;
 							//testPlatoon->soldiers[iter]->clearCommandList();
-							sf::sleep(sf::milliseconds(10));
+							sf::sleep(sf::milliseconds(1));
 						}
 						else
 						{
 							platoon1->platoonSections[iter2]->soldiers[iter]->goalSquare = NULL;
 							Toolbox::printDebugMessage("Arrived at goal");
 							platoon1->platoonSections[iter2]->soldiers[iter]->needsToMove = false;
-							sf::sleep(sf::milliseconds(10));
+							sf::sleep(sf::milliseconds(1));
 							platoon1->platoonSections[iter2]->soldiers[iter]->mapGenerated = false;
 						}
 					}
@@ -198,15 +198,15 @@ void Game::handleInput()
 			
 			for (auto iter2 = 0; iter2 != platoon2->platoonSections.size(); iter2++)
 			{
-				m_SD2.m_platoonSection = platoon1->platoonSections[iter2];
-				for (auto iter = 0; iter != platoon2->platoonSections[iter2]->soldiers.size(); iter2++)
+				
+				for (auto iter = 0; iter != platoon2->platoonSections[iter2]->soldiers.size(); iter++)
 				{
 					if (platoon2->platoonSections[iter2]->soldiers[iter]->getState() != dead)
 					{
 						if (platoon2->platoonSections[iter2]->soldiers[iter]->shape.getPosition() !=
 							terrainManager->terrainSquares[platoon2->platoonSections[iter2]->soldiers[iter]->goalSquare]->shape.getPosition())
 						{
-
+							m_SD2.m_platoonSection = platoon2->platoonSections[iter2];
 							platoon2->platoonSections[iter2]->soldiers[iter]->soldierThink(m_SD2);
 
 							//debugList = testSoldier->commandList;
@@ -218,7 +218,7 @@ void Game::handleInput()
 							platoon2->platoonSections[iter2]->soldiers[iter]->goalSquare = NULL;
 							Toolbox::printDebugMessage("Arrived at goal");
 							platoon2->platoonSections[iter2]->soldiers[iter]->needsToMove = false;
-							sf::sleep(sf::milliseconds(10));
+							sf::sleep(sf::milliseconds(1));
 							platoon2->platoonSections[iter2]->soldiers[iter]->mapGenerated = false;
 						}
 					}

@@ -21,7 +21,8 @@ public:
 	void chooseLeader();
 	int getLeader();
 	void addSoldier();
-
+	sf::Color teamColour;
+	sf::Color teamLeaderColour;
 	std::vector<Soldier*> soldiers;
 
 private:
