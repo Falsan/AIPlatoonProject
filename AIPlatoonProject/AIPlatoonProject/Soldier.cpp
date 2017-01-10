@@ -25,7 +25,7 @@ void Soldier::soldierThink(SoldierData _SD)
 			//currentOrder = "findCover";
 			//commandList.push_back("findCover");
 		}
-
+		
 		if (commandList.size() > 0)
 		{
 			pathFindToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
@@ -40,10 +40,11 @@ void Soldier::soldierThink(SoldierData _SD)
 			pathFindToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
 			executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
 		}
+		
 		//executeCommand(terrainManager, leader);
 	}
 
-
+	
 	clearCommandList();
 }
 
@@ -58,12 +59,17 @@ void Soldier::interpretOrders(Platoon* enemyPlatoon)
 		}
 		else
 		{
-
+			if (prevCommandList.size() > 0)
+			{
+				commandList.push_back(prevCommandList.front());
+			}
+			needsToMove = false;
 		}
 		//currentOrder = "findCover";
 	}
 	else
 	{
+		needsToMove = false;
 		bool validTarget = false;
 		//check to see if there's anything to shoot at
 		for (auto iter2 = 0; iter2 != enemyPlatoon->platoonSections.size(); iter2++) 
@@ -223,49 +229,74 @@ void Soldier::shoot(Platoon* enemyPlatoon)
 
 void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader, Platoon* enemyPlatoon)
 {
+	
+	bool excecuting = true;
 	if (mapGenerated == false)
 	{
 		generateMapToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
 	}
 	if (commandList.size() > 0)
 	{
-
-		if (commandList.front() == "moveUp")
+		while (excecuting == true)
 		{
-			moveUp(terrainManager);
+			if (commandList.size() <= 0)
+			{
+				excecuting = false;
+			}
+			else if (commandList.front() == "moveUp")
+			{
+				moveUp(terrainManager);
+				excecuting = false;
+			}
+			else if (commandList.front() == "moveDown")
+			{
+				moveDown(terrainManager);
+				excecuting = false;
+			}
+			else if (commandList.front() == "moveLeft")
+			{
+				moveLeft(terrainManager);
+				excecuting = false;
+			}
+			else if (commandList.front() == "moveRight")
+			{
+				moveRight(terrainManager);
+				excecuting = false;
+			}
+			else if (commandList.front() == "findCover")
+			{
+				//commandList.erase(commandList.begin());
+				clearCommandList();
+				findCover(terrainManager); //might be something wrong with this function
+				generateMapToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
+				pathFindToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
+				//excecuting = false;
+			}
+			else if (commandList.front() == "findCoverTogether")
+			{
+				//findCoverTogether(terrainManager, leader);
+				//clearCommandList();
+				//generateMapToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
+				//pathFindToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
+			}
+			else if (commandList.front() == "fire")
+			{
+				shoot(enemyPlatoon);
+				excecuting = false;
+			}
+			else if (commandList.front() == "hunkerDown")
+			{
+				hunkerDown();
+				excecuting = false;
+			}
+			else if (commandList.front() == "advance")
+			{
+				advance(enemyPlatoon, terrainManager, leader);
+				excecuting = false;
+			}
+			
 		}
-		else if (commandList.front() == "moveDown")
-		{
-			moveDown(terrainManager);
-		}
-		else if (commandList.front() == "moveLeft")
-		{
-			moveLeft(terrainManager);
-		}
-		else if (commandList.front() == "moveRight")
-		{
-			moveRight(terrainManager);
-		}
-		else if (commandList.front() == "findCover")
-		{
-			findCover(terrainManager);
-		}
-		else if (commandList.front() == "findCoverTogether")
-		{
-			findCoverTogether(terrainManager, leader);
-		}
-		else if (commandList.front() == "fire")
-		{
-			shoot(enemyPlatoon);
-		}
-		else if (commandList.front() == "hunkerDown")
-		{
-			hunkerDown();
-		}
-		else if (commandList.front() == "advance")
-		{
-			advance(enemyPlatoon, terrainManager, leader);
-		}
+		
 	}
 	else
 	{
@@ -281,7 +312,13 @@ void Soldier::addCommandToList(std::string command)
 
 void Soldier::clearCommandList()
 {
-	commandList.clear();
+	if (commandList.size() > 0)
+	{
+		prevCommandList.clear();
+		commandList.erase(commandList.begin());
+		prevCommandList = commandList;
+		commandList.clear();
+	}
 }
 
 void Soldier::findCover(TerrainManager* terrainManager)

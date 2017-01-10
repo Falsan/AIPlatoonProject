@@ -45,6 +45,7 @@ public:
 
 	sf::CircleShape shape;
 	std::vector<std::string> commandList;
+	std::vector<std::string> prevCommandList;
 
 	void findCover(TerrainManager* terrainManager);
 	int goalSquare;
