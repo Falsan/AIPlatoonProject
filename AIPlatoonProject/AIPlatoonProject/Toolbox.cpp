@@ -54,10 +54,11 @@ int Toolbox::addATwenty(int toAdd)
 
 sf::Vector2f Toolbox::findMidPoint(sf::Vector2f firstVector, sf::Vector2f secondVector)
 {
+
 	sf::Vector2f midpoint = firstVector + secondVector;
 
-	midpoint.x = midpoint.x / 2;
-	midpoint.y = midpoint.y / 2;
+	//midpoint.x = midpoint.x / 2;
+	//midpoint.y = midpoint.y / 2;
 
 	return midpoint;
 }
