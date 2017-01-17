@@ -193,6 +193,15 @@ void Game::handleInput()
 							platoon1->platoonSections[iter2]->soldiers[iter]->mapGenerated = false;
 						}
 					}
+
+					if (platoon1->platoonSections[iter2]->soldiers[iter]->getState() == dead &&
+						platoon1->platoonSections[iter2]->soldiers[iter]->getLeader())
+					{
+						for (auto iter4 = 0; iter4 != platoon1->platoonSections[iter2]->soldiers.size(); iter4++)
+						{
+							platoon1->platoonSections[iter2]->soldiers[iter4]->setLeaderIsDead(true);
+						}
+					}
 				}
 			}
 			
@@ -220,6 +229,15 @@ void Game::handleInput()
 							platoon2->platoonSections[iter2]->soldiers[iter]->needsToMove = false;
 							sf::sleep(sf::milliseconds(1));
 							platoon2->platoonSections[iter2]->soldiers[iter]->mapGenerated = false;
+						}
+					}
+
+					if (platoon2->platoonSections[iter2]->soldiers[iter]->getState() == dead &&
+						platoon2->platoonSections[iter2]->soldiers[iter]->getLeader())
+					{
+						for (auto iter4 = 0; iter4 != platoon2->platoonSections[iter2]->soldiers.size(); iter4++)
+						{
+							platoon2->platoonSections[iter2]->soldiers[iter4]->setLeaderIsDead(true);
 						}
 					}
 				}
