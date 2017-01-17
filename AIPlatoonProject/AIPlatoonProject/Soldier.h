@@ -85,6 +85,9 @@ public:
 	bool getLeaderIsDead();
 	void setLeaderIsDead(bool);
 
+	Soldier* getCurrentTarget();
+	void setCurrentTarget(Soldier*);
+
 private:
 	Soldier* target;
 	bool isLeader;

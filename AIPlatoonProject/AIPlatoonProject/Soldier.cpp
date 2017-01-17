@@ -59,7 +59,6 @@ void Soldier::soldierThink(SoldierData _SD)
 		}
 	}
 	clearCommandList();
-	setShooting(false);
 	setGettingShotAt(false);
 }
 
@@ -165,7 +164,7 @@ void Soldier::soldierPanic(SoldierData _SD)
 void Soldier::advance(Platoon* enemyPlatoon, TerrainManager* terrainManager, Soldier* leader)
 {
 	Toolbox::printDebugMessage("Forward");
-	target = nullptr;
+	//target = nullptr;
 	float distance = 20000000.0f;
 	for (auto iter2 = 0; iter2 != enemyPlatoon->platoonSections.size(); iter2++)
 	{
@@ -236,7 +235,7 @@ void Soldier::shoot(Platoon* enemyPlatoon)
 	std::pair<float, Soldier*> pair = Toolbox::findDistanceOfEnemiesAndTarget(enemyPlatoon, this);
 
 	float distance = pair.first;
-	Soldier* target = pair.second;
+	target = pair.second;
 
 	if (distance < 100000.0f)
 	{
@@ -317,21 +316,25 @@ void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader, Pl
 			else if (commandList.front() == "moveUp")
 			{
 				moveUp(terrainManager);
+				setShooting(false);
 				excecuting = false;
 			}
 			else if (commandList.front() == "moveDown")
 			{
 				moveDown(terrainManager);
+				setShooting(false);
 				excecuting = false;
 			}
 			else if (commandList.front() == "moveLeft")
 			{
 				moveLeft(terrainManager);
+				setShooting(false);
 				excecuting = false;
 			}
 			else if (commandList.front() == "moveRight")
 			{
 				moveRight(terrainManager);
+				setShooting(false);
 				excecuting = false;
 			}
 			else if (commandList.front() == "findCover")
@@ -341,10 +344,12 @@ void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader, Pl
 				findCover(terrainManager); //might be something wrong with this function
 				generateMapToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
 				pathFindToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
+				setShooting(false);
 				//excecuting = false;
 			}
 			else if (commandList.front() == "findCoverTogether")
 			{
+				setShooting(false);
 				//findCoverTogether(terrainManager, leader);
 				//clearCommandList();
 				//generateMapToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
@@ -353,16 +358,19 @@ void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader, Pl
 			else if (commandList.front() == "fire")
 			{
 				shoot(enemyPlatoon);
+				setShooting(true);
 				excecuting = false;
 			}
 			else if (commandList.front() == "hunkerDown")
 			{
 				hunkerDown();
+				setShooting(false);
 				excecuting = false;
 			}
 			else if (commandList.front() == "advance")
 			{
 				advance(enemyPlatoon, terrainManager, leader);
+				setShooting(false);
 				excecuting = false;
 			}
 			
@@ -818,6 +826,15 @@ void Soldier::setLeaderIsDead(bool isLeaderDead)
 	leaderIsDead = isLeaderDead;
 }
 
+void Soldier::setCurrentTarget(Soldier* targetToSet)
+{
+	target = targetToSet;
+}
+
+Soldier* Soldier::getCurrentTarget()
+{
+	return target;
+}
 //OLD PATHFINDING STUFF
 
 /*xOrY = rand() % 2 + 1;

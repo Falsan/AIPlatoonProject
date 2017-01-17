@@ -55,7 +55,7 @@ private:
 	sf::RenderWindow* gameWindow;
 	//sf::VideoMode defaultVideoMode(int, int);
 	std::string windowName;
-
+	std::vector<std::pair<Soldier*, Soldier*>> shots; //first is shooter, second is target
 	
 };
 
