@@ -154,8 +154,21 @@ void Game::draw()
 			}
 		}
 
+		for (auto iter = 0; iter != shots.size(); iter++)
+		{
+			sf::Vertex bullet[2];
+
+			bullet[0].position = shots[iter].first->shape.getPosition();
+			bullet[0].color = sf::Color::White;
+			bullet[1].position = shots[iter].second->shape.getPosition();
+			bullet[1].color = sf::Color::White;
+			
+
+			window.draw(bullet, 2, sf::Lines);
+		}
+
 		//window.draw(testSoldier->shape);
-		
+		shots.clear();
 		window.display();
 		window.clear();
 	}
@@ -183,6 +196,14 @@ void Game::handleInput()
 							//debugList = testSoldier->commandList;
 							//testPlatoon->soldiers[iter]->clearCommandList();
 							sf::sleep(sf::milliseconds(1));
+							if (platoon1->platoonSections[iter2]->soldiers[iter]->getShooting() == true)
+							{
+								std::pair<Soldier*, Soldier*> pair;
+								pair.first = platoon1->platoonSections[iter2]->soldiers[iter];
+								pair.second = platoon1->platoonSections[iter2]->soldiers[iter]->getCurrentTarget();
+								shots.push_back(pair);
+							}
+							
 						}
 						else
 						{
@@ -220,7 +241,14 @@ void Game::handleInput()
 
 							//debugList = testSoldier->commandList;
 							//testPlatoon->soldiers[iter]->clearCommandList();
-							sf::sleep(sf::milliseconds(10));
+							sf::sleep(sf::milliseconds(1));
+							if (platoon2->platoonSections[iter2]->soldiers[iter]->getShooting() == true)
+							{
+								std::pair<Soldier*, Soldier*> pair;
+								pair.first = platoon2->platoonSections[iter2]->soldiers[iter];
+								pair.second = platoon2->platoonSections[iter2]->soldiers[iter]->getCurrentTarget();
+								shots.push_back(pair);
+							}
 						}
 						else
 						{
