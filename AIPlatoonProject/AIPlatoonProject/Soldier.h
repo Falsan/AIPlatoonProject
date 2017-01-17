@@ -58,16 +58,32 @@ public:
 	void reduceHealth();
 
 	void soldierThink(SoldierData);
+	void soldierAct(SoldierData);
+	void soldierPanic(SoldierData);
+	void panicCheck(SoldierData);
 
 	bool mapGenerated; //hacky way of doing it, REVISE
 
 	void calculateBraveryRating();
 	void interpretOrders(Platoon*);
+	
 	void hunkerDown();
 	bool needsToMove;
 
 	bool getIsInCover();
 	void setIsInCover(bool);
+
+	bool getGettingShotAt();
+	void setGettingShotAt(bool);
+
+	bool getShooting();
+	void setShooting(bool);
+
+	bool getFleeing();
+	void setFleeing(bool);
+
+	bool getLeaderIsDead();
+	void setLeaderIsDead(bool);
 
 private:
 	Soldier* target;

@@ -7,6 +7,8 @@ Soldier::Soldier()
 	mapGenerated = false;
 	setHealth(20);
 	needsToMove = false;
+	leaderIsDead = false;
+
 }
 
 Soldier::~Soldier()
@@ -16,36 +18,89 @@ Soldier::~Soldier()
 
 void Soldier::soldierThink(SoldierData _SD)
 {
+	if (gettingShotAt == true)
+	{
+		actualBraveryRating--;
+		actualBraveryRating--;
+	}
+	if (shooting == true)
+	{
+		actualBraveryRating--;
+	}
+	if (leaderIsDead == true)
+	{
+		actualBraveryRating--;
+	}
+
+	if (actualBraveryRating < 10)
+	{
+
+	}
+	else
+	{
+		actualBraveryRating++;
+	}
+
 	//if all of these are false no sensible soldier would not obey a direct order
 	if (gettingShotAt == false && shooting == false && fleeing == false && leaderIsDead == false) 
 	{
-		if (currentOrder == "")
-		{
-			interpretOrders(_SD.enemyPlatoon);
-			//currentOrder = "findCover";
-			//commandList.push_back("findCover");
-		}
+		soldierAct(_SD);
 		
-		if (commandList.size() > 0)
+	}
+	else
+	{
+		if (actualBraveryRating < 10)
 		{
-			pathFindToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-			executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
+			panicCheck(_SD);
 		}
-		else if (commandList.size() == 0)
+		else
 		{
-			if (mapGenerated == false)
-			{
-				generateMapToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-			}
-			pathFindToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-			executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
+			soldierAct(_SD);
 		}
-		
-		//executeCommand(terrainManager, leader);
+	}
+	clearCommandList();
+	setShooting(false);
+	setGettingShotAt(false);
+}
+
+void Soldier::panicCheck(SoldierData _SD)
+{
+	int random = rand() % 100 + 1;
+
+	if (random > 75)
+	{
+		soldierPanic(_SD);
+	}
+	else
+	{
+		actualBraveryRating++;
+		soldierAct(_SD);
+	}
+}
+
+void Soldier::soldierAct(SoldierData _SD)
+{
+	if (currentOrder == "")
+	{
+		interpretOrders(_SD.enemyPlatoon);
+		//currentOrder = "findCover";
+		//commandList.push_back("findCover");
 	}
 
-	
-	clearCommandList();
+	if (commandList.size() > 0)
+	{
+		pathFindToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
+		executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
+	}
+	else if (commandList.size() == 0)
+	{
+		if (mapGenerated == false)
+		{
+			generateMapToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
+		}
+		pathFindToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
+		executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
+	}
 }
 
 void Soldier::interpretOrders(Platoon* enemyPlatoon)
@@ -100,6 +155,11 @@ void Soldier::interpretOrders(Platoon* enemyPlatoon)
 			commandList.push_back("hunkerDown");
 		}
 	}
+}
+
+void Soldier::soldierPanic(SoldierData _SD)
+{
+	Toolbox::printDebugMessage("Panic");
 }
 
 void Soldier::advance(Platoon* enemyPlatoon, TerrainManager* terrainManager, Soldier* leader)
@@ -194,9 +254,20 @@ void Soldier::shoot(Platoon* enemyPlatoon)
 
 	if (hasTargetInRange == true)
 	{
-		int hit = rand() % 2 + 1;
+		int hit = rand() % 10 + 1;
+		int missChance;
+
+		if (actualBraveryRating > braveryRating)
+		{
+			missChance = actualBraveryRating - braveryRating;
+		}
+
+		hit + missChance;
+
 		Toolbox::printDebugMessage("Pew");
-		if (hit == 1)//hit
+		target->setGettingShotAt(true);
+		setShooting(true);
+		if (hit >= 5)//hit
 		{
 			Toolbox::printDebugMessage("Hit");
 			//target->gettingShotAt = true;
@@ -208,7 +279,7 @@ void Soldier::shoot(Platoon* enemyPlatoon)
 				target->shape.setFillColor(sf::Color::Black);
 			}
 		}
-		else if (hit == 2)//miss
+		else if (hit < 5)//miss
 		{
 			Toolbox::printDebugMessage("Miss");
 		}
@@ -505,6 +576,7 @@ void Soldier::calculateBraveryRating() //need to run this at setup to assign bra
 		braveryRating = braveryRating + 2;
 	}
 	
+	actualBraveryRating = braveryRating;
 }
 
 void Soldier::setPosition(sf::Vector2f positionToSet)
@@ -704,6 +776,46 @@ void Soldier::reduceHealth()
 void Soldier::hunkerDown()
 {
 	Toolbox::printDebugMessage("HunkerDown");
+}
+
+bool Soldier::getGettingShotAt()
+{
+	return gettingShotAt;
+}
+
+void Soldier::setGettingShotAt(bool isGettingShotAt)
+{
+	gettingShotAt = isGettingShotAt;
+}
+
+bool Soldier::getShooting()
+{
+	return shooting;
+}
+
+void Soldier::setShooting(bool isShooting)
+{
+	shooting = isShooting;
+}
+
+bool Soldier::getFleeing()
+{
+	return fleeing;
+}
+
+void Soldier::setFleeing(bool isFleeing)
+{
+	fleeing = isFleeing;
+}
+
+bool Soldier::getLeaderIsDead()
+{
+	return leaderIsDead;
+}
+
+void Soldier::setLeaderIsDead(bool isLeaderDead)
+{
+	leaderIsDead = isLeaderDead;
 }
 
 //OLD PATHFINDING STUFF
