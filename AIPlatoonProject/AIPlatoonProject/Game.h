@@ -31,6 +31,8 @@ public:
 
 	void handleInput();
 
+	void resetBoard();
+
 	TerrainManager* terrainManager;
 
 	Platoon* platoon1;

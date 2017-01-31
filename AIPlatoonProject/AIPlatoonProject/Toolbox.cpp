@@ -178,7 +178,7 @@ std::pair<sf::Vector2f, float> Toolbox::findGoalSquare(TerrainManager* terrainMa
 			{
 				goalPosition = terrainManager->terrainSquares[iter]->shape.getPosition();
 				distance = newDistance;
-				terrainManager->setGoalSquare(iter);
+				//terrainManager->setGoalSquare(iter);
 				self->goalSquare = iter;
 			}
 			else
@@ -187,7 +187,7 @@ std::pair<sf::Vector2f, float> Toolbox::findGoalSquare(TerrainManager* terrainMa
 			}
 		}
 	}
-
+	terrainManager->setGoalSquare(self->goalSquare);
 	std::pair<sf::Vector2f, float> pair;
 	pair.first = goalPosition;
 	pair.second = distance;
