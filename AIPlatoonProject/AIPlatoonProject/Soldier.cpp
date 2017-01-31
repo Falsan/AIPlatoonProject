@@ -18,44 +18,63 @@ Soldier::~Soldier()
 
 void Soldier::soldierThink(SoldierData _SD)
 {
-	if (gettingShotAt == true)
+	if (state == panicked)
 	{
-		actualBraveryRating--;
-		actualBraveryRating--;
-	}
-	if (shooting == true)
-	{
-		actualBraveryRating--;
-	}
-	if (leaderIsDead == true)
-	{
-		actualBraveryRating--;
-	}
-
-	if (actualBraveryRating < 10)
-	{
-
-	}
-	else
-	{
-		actualBraveryRating++;
-	}
-
-	//if all of these are false no sensible soldier would not obey a direct order
-	if (gettingShotAt == false && shooting == false && fleeing == false && leaderIsDead == false) 
-	{
-		soldierAct(_SD);
-		
-	}
-	else
-	{
-		if (actualBraveryRating < 10)
+		setFleeing(true);
+		int random = rand() % 3 + 1;
+		if (random == 1)
 		{
-			panicCheck(_SD);
+			flee(_SD);
 		}
 		else
 		{
+			state = aliveAndWell;
+			actualBraveryRating++;
+		}
+		
+		actualBraveryRating++;
+	}
+	else
+	{
+		if (gettingShotAt == true)
+		{
+			actualBraveryRating--;
+			actualBraveryRating--;
+		}
+		if (shooting == true)
+		{
+			actualBraveryRating--;
+		}
+		if (leaderIsDead == true)
+		{
+			actualBraveryRating--;
+		}
+
+		if (actualBraveryRating < 10)
+		{
+
+		}
+		else
+		{
+			actualBraveryRating++;
+		}
+
+		//if all of these are false no sensible soldier would not obey a direct order
+		if (gettingShotAt == false && shooting == false && fleeing == false && leaderIsDead == false)
+		{
 			soldierAct(_SD);
+
+		}
+		else
+		{
+			if (actualBraveryRating < 4)
+			{
+				panicCheck(_SD);
+			}
+			else
+			{
+				soldierAct(_SD);
+			}
 		}
 	}
 	clearCommandList();
@@ -156,9 +175,27 @@ void Soldier::interpretOrders(Platoon* enemyPlatoon)
 	}
 }
 
+void Soldier::flank(SoldierData _SD)
+{
+	std::pair<float, Soldier*> pair = Toolbox::findDistanceOfEnemiesAndTarget(_SD.enemyPlatoon ,this);
+
+	float distance = pair.first; //need to get the x and y values of distance for moving around the enemy
+	target = pair.second;
+}
+
 void Soldier::soldierPanic(SoldierData _SD)
 {
 	Toolbox::printDebugMessage("Panic");
+	state = panicked;
+}
+
+void Soldier::flee(SoldierData _SD)
+{
+	Toolbox::printDebugMessage("Flee");
+	
+	addCommandToList("hunkerDown");
+
+	soldierAct(_SD);
 }
 
 void Soldier::advance(Platoon* enemyPlatoon, TerrainManager* terrainManager, Soldier* leader)
@@ -230,6 +267,7 @@ void Soldier::checkRange(Platoon* enemyPlatoon)
 void Soldier::shoot(Platoon* enemyPlatoon)
 {
 	//pew pew
+
 	bool hasTargetInRange = false;
 
 	std::pair<float, Soldier*> pair = Toolbox::findDistanceOfEnemiesAndTarget(enemyPlatoon, this);
@@ -249,50 +287,9 @@ void Soldier::shoot(Platoon* enemyPlatoon)
 		hasTargetInRange = false;
 		inRange = false;
 	}
+
+	equippedWeapon->shoot(enemyPlatoon, target, inRange, this, hasTargetInRange);
 	
-
-	if (hasTargetInRange == true)
-	{
-		int hit = rand() % 10 + 1;
-		int missChance;
-
-		if (actualBraveryRating > braveryRating)
-		{
-			missChance = actualBraveryRating - braveryRating;
-		}
-
-		hit + missChance;
-
-		Toolbox::printDebugMessage("Pew");
-		target->setGettingShotAt(true);
-		setShooting(true);
-		if (hit >= 5)//hit
-		{
-			Toolbox::printDebugMessage("Hit");
-			//target->gettingShotAt = true;
-			target->reduceHealth();
-
-			if (target->getHealth() <= 0)
-			{
-				target->setState(dead);
-				target->shape.setFillColor(sf::Color::Black);
-			}
-		}
-		else if (hit < 5)//miss
-		{
-			Toolbox::printDebugMessage("Miss");
-		}
-
-		hasTargetInRange = false;
-	}
-	else if(hasTargetInRange == false)
-	{
-		inRange = false;
-	}
-	else
-	{
-		Toolbox::printDebugMessage("Hunkerdown");
-	}
 	//delete target;
 }
 
@@ -443,7 +440,7 @@ void Soldier::findCoverTogether(TerrainManager* terrainManager, Soldier* leader)
 		float distance = 2000000.0f;
 
 		std::pair<sf::Vector2f, float> pair = Toolbox::findGoalSquare(terrainManager, this); //MAY BE AN ISSUE WITH THIS "THIS"
-
+		
 		goalPosition = pair.first;
 		distance = pair.second;
 	}
@@ -835,97 +832,34 @@ Soldier* Soldier::getCurrentTarget()
 {
 	return target;
 }
-//OLD PATHFINDING STUFF
 
-/*xOrY = rand() % 2 + 1;
-for (auto iter = 0; iter != terrainManager->terrainSquares.size(); iter++) //this gets the current position in the array
+void Soldier::setActualBraveryRating(int braveryToSet)
 {
-if (terrainManager->terrainSquares[iter]->shape.getPosition() == pathfinderPosition)
-{
-currentPosition = iter; //40 down 1 accross
-currentRight = iter + 1;
-currentLeft = iter - 1;
-currentDown = iter + 40;
-currentUp = iter - 40;
-
-//fudge for the issue with reading off grid
-if (currentUp < 0)
-{
-currentUp = 0;
+	actualBraveryRating = braveryToSet;
 }
 
-if (currentDown > 1199)
+int Soldier::getActualBraveryRating()
 {
-currentDown = 1199;
+	return actualBraveryRating;
 }
 
-if (currentRight > 1199)
+void Soldier::setBraveryRating(int braveryToSet)
 {
-currentRight = 1199;
+	braveryRating = braveryToSet;
 }
 
-if (currentLeft < 0)
+int Soldier::getBraveryRating()
 {
-currentLeft = 0;
-}
-}
+	return braveryRating;
 }
 
-//xOrY = rand() % 2 + 1;
-resolveIfStuck(terrainManager, currentUp, currentDown, currentLeft, currentRight);
-
-if (pathfinderPosition.y == goalPos.y)
+Weapon* Soldier::getWeapon()
 {
-xOrY = 2;
-}
-else if (pathfinderPosition.x == goalPos.x)
-{
-xOrY = 1;
-}
-else
-{
-
+	return equippedWeapon;
 }
 
-if (xOrY == 1)
+void Soldier::setUpWeapon(WeaponTypes loadout)
 {
-//move up or down
-if ((pathfinderPosition.y >= goalPos.y) && terrainManager->terrainSquares[currentUp]->getIsPassable() == true)
-{
-addCommandToList("moveUp");
-pathfinderPosition.y = pathfinderPosition.y - 20.0f;
-
+	equippedWeapon->setWeaponType(loadout);
+	equippedWeapon->setupAmmoCapacity();
 }
-else if ((pathfinderPosition.y <= goalPos.y) && terrainManager->terrainSquares[currentDown]->getIsPassable() == true)
-{
-addCommandToList("moveDown");
-pathfinderPosition.y = pathfinderPosition.y + 20.0f;
-
-}
-else
-{
-Toolbox::printDebugMessage("MoveY was called when Y for goal and position are the same");
-}
-}
-else if (xOrY == 2)
-{
-//move right or left
-if ((pathfinderPosition.x >= goalPos.x) && terrainManager->terrainSquares[currentLeft]->getIsPassable() == true)
-{
-addCommandToList("moveLeft");
-pathfinderPosition.x = pathfinderPosition.x - 20.0f;
-}
-else if (pathfinderPosition.x <= goalPos.x && terrainManager->terrainSquares[currentRight]->getIsPassable() == true)
-{
-addCommandToList("moveRight");
-pathfinderPosition.x = pathfinderPosition.x + 20.0f;
-}
-else
-{
-Toolbox::printDebugMessage("MoveX was called when X for goal and position are the same");
-}
-}
-else
-{
-Toolbox::printDebugMessage("Decision to move on X or Y failed");
-}*/

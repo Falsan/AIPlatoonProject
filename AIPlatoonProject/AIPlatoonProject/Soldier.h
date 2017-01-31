@@ -6,8 +6,10 @@
 #include "SoldierStates.h"
 #include "PlatoonSection.h"
 #include "SoldierData.h"
+#include "Weapon.h"
 
 class PlatoonSection;
+class Weapon;
 
 class Soldier
 {
@@ -85,8 +87,20 @@ public:
 	bool getLeaderIsDead();
 	void setLeaderIsDead(bool);
 
+	void flee(SoldierData);
+	void flank(SoldierData);
+
 	Soldier* getCurrentTarget();
 	void setCurrentTarget(Soldier*);
+
+	int getActualBraveryRating();
+	void setActualBraveryRating(int);
+
+	int getBraveryRating();
+	void setBraveryRating(int);
+
+	Weapon* getWeapon();
+	void setUpWeapon(WeaponTypes);
 
 private:
 	Soldier* target;
@@ -110,6 +124,7 @@ private:
 	int braveryRating; //this integer controls how likely the soldier is to obey orders under prime conditions
 	int actualBraveryRating; //this integer will be a modifyable value which controls if the soldier actually does something under stress
 	
+	Weapon* equippedWeapon;
 
 	std::vector<std::pair<int, int>> map;
 };

@@ -349,4 +349,14 @@ void Game::handleInput()
 		}
 		
 	}
+
+	resetBoard();
+}
+
+void Game::resetBoard()
+{
+	for (auto iter = 0; terrainManager->terrainSquares.size() > iter; iter++)
+	{
+		terrainManager->terrainSquares[iter]->setGoal(false);
+	}
 }
