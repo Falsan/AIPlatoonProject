@@ -252,7 +252,9 @@ void Game::handleInput()
 						}
 						else
 						{
+							terrainManager->terrainSquares[platoon2->platoonSections[iter2]->soldiers[iter]->goalSquare]->setGoal(false);
 							platoon2->platoonSections[iter2]->soldiers[iter]->goalSquare = NULL;
+							
 							Toolbox::printDebugMessage("Arrived at goal");
 							platoon2->platoonSections[iter2]->soldiers[iter]->needsToMove = false;
 							sf::sleep(sf::milliseconds(1));

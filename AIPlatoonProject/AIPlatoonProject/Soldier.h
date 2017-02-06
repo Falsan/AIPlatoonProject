@@ -102,6 +102,8 @@ public:
 	Weapon* getWeapon();
 	void setUpWeapon(WeaponTypes);
 
+	void checkForCover();
+
 private:
 	Soldier* target;
 	bool isLeader;

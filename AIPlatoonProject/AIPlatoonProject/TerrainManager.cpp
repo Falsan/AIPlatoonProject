@@ -29,6 +29,8 @@ void TerrainManager::setUpTerrainSquares()
 			temp->setGoal(false);
 			temp->setSpawn(false);
 			temp->shape.setFillColor(sf::Color(0, 100, 0, 255));
+			//temp->shape.setFillColor(sf::Color::Green);
+			
 		}
 		else if (terrainValues[iter] == 1)
 		{
@@ -38,6 +40,7 @@ void TerrainManager::setUpTerrainSquares()
 			temp->setGoal(false);
 			temp->setSpawn(false);
 			temp->shape.setFillColor(sf::Color(0, 0, 100, 255));
+			//temp->shape.setFillColor(sf::Color::Green);
 		}
 		else if (terrainValues[iter] == 2)
 		{
@@ -47,6 +50,7 @@ void TerrainManager::setUpTerrainSquares()
 			temp->setGoal(false);
 			temp->setSpawn(false);
 			temp->shape.setFillColor(sf::Color::Red);
+			//temp->shape.setFillColor(sf::Color::Green);
 		}
 		else if (terrainValues[iter] == 3)
 		{
@@ -56,6 +60,7 @@ void TerrainManager::setUpTerrainSquares()
 			temp->setGoal(false);
 			temp->setSpawn(true);
 			temp->shape.setFillColor(sf::Color(0, 100, 0, 255));
+			//temp->shape.setFillColor(sf::Color::Green);
 		}
 		else
 		{
