@@ -63,6 +63,65 @@ sf::Vector2f Toolbox::findMidPoint(sf::Vector2f firstVector, sf::Vector2f second
 	return midpoint;
 }
 
+bool Toolbox::getDistanceOfOfficer(PlatoonSection* thisPlatoon, Soldier* self, TerrainManager* terrainManager)
+{
+	float distance = 20000000.0f;
+	Soldier* officer;
+
+	for (auto iter2 = 0; thisPlatoon->soldiers.size() > iter2; iter2++)
+	{
+
+		if (thisPlatoon->soldiers[iter2]->getState() == aliveAndWell && thisPlatoon->soldiers[iter2]->getLeader())
+		{
+			float newDistanceX = thisPlatoon->soldiers[iter2]->shape.getPosition().x - self->getPosition().x;
+			float newDistanceY = thisPlatoon->soldiers[iter2]->shape.getPosition().y - self->getPosition().y;
+			officer = thisPlatoon->soldiers[iter2];
+
+			newDistanceX = newDistanceX * newDistanceX;
+			newDistanceY = newDistanceY * newDistanceY;
+
+			float newDistance = newDistanceX + newDistanceY;
+
+			//newDistance = newDistance / newDistance;
+
+			//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
+			if (newDistance < distance)
+			{
+				//target = enemyPlatoon->soldiers[iter];
+				distance = newDistance;
+				//terrainManager->setGoalSquare(iter);
+				//goalSquare = iter;
+			}
+			else
+			{
+
+			}
+		}
+		else
+		{
+
+		}
+		
+	}
+	if (distance > 2000)
+	{
+		for (auto iter2 = 0; terrainManager->terrainSquares.size() > iter2; iter2++)
+		{
+			if (terrainManager->terrainSquares[iter2]->shape.getPosition() == officer->shape.getPosition())
+			{
+				self->goalSquare = iter2;
+			}
+		}
+
+		self->generateMapToGoal(terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), terrainManager);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 float Toolbox::findDistanceOfEnemies(Platoon* enemyPlatoon, Soldier* self)
 {
 	float distance = 20000000.0f;
