@@ -100,7 +100,14 @@ void Soldier::soldierAct(SoldierData _SD)
 {
 	if (currentOrder == "")
 	{
-		interpretOrders(_SD.enemyPlatoon);
+		if (Toolbox::getDistanceOfOfficer(_SD.m_platoonSection, this, _SD.m_terrainManager))
+		{
+			
+		}
+		else
+		{
+			interpretOrders(_SD.enemyPlatoon);
+		}
 		//currentOrder = "findCover";
 		//commandList.push_back("findCover");
 	}
