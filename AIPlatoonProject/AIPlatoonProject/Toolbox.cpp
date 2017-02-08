@@ -66,7 +66,7 @@ sf::Vector2f Toolbox::findMidPoint(sf::Vector2f firstVector, sf::Vector2f second
 bool Toolbox::getDistanceOfOfficer(PlatoonSection* thisPlatoon, Soldier* self, TerrainManager* terrainManager)
 {
 	float distance = 20000000.0f;
-	Soldier* officer;
+	Soldier* officer = nullptr;
 
 	for (auto iter2 = 0; thisPlatoon->soldiers.size() > iter2; iter2++)
 	{
@@ -103,13 +103,18 @@ bool Toolbox::getDistanceOfOfficer(PlatoonSection* thisPlatoon, Soldier* self, T
 		}
 		
 	}
-	if (distance > 2000)
+	if (distance > 20000)
 	{
 		for (auto iter2 = 0; terrainManager->terrainSquares.size() > iter2; iter2++)
 		{
-			if (terrainManager->terrainSquares[iter2]->shape.getPosition() == officer->shape.getPosition())
+			if (officer != nullptr)
 			{
-				self->goalSquare = iter2;
+				if ((terrainManager->terrainSquares[iter2]->shape.getPosition().x == officer->shape.getPosition().x)
+					&& (terrainManager->terrainSquares[iter2]->shape.getPosition().y == officer->shape.getPosition().y))
+				{
+
+					self->goalSquare = iter2;
+				}
 			}
 		}
 

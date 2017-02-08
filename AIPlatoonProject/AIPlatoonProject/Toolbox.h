@@ -23,7 +23,7 @@ public:
 	static float findDistanceOfEnemies(Platoon*, Soldier*);
 	static std::pair<float, Soldier*> findDistanceOfEnemiesAndTarget(Platoon*, Soldier*);
 	static std::pair<sf::Vector2f, float> findGoalSquare(TerrainManager* terrainManager, Soldier*);
-	static bool getDistanceOfOfficer(PlatoonSection*, Soldier*, TerrainManager*)
+	static bool getDistanceOfOfficer(PlatoonSection*, Soldier*, TerrainManager*);
 
 private:
 
