@@ -7,9 +7,13 @@
 #include "PlatoonSection.h"
 #include "SoldierData.h"
 #include "Weapon.h"
+#include "TacticsCodec.h"
 
 class PlatoonSection;
 class Weapon;
+class TerrainManager;
+class SoldierData;
+class TacticsCodec;
 
 class Soldier
 {
@@ -38,8 +42,7 @@ public:
 	void moveDown(TerrainManager*);
 	void moveRight(TerrainManager*);
 	void shoot(Platoon*);
-	void checkRange(Platoon*);
-	void advance(Platoon*, TerrainManager*, Soldier*);
+
 
 	void setState(SoldierStates);
 	int getState();
@@ -60,14 +63,10 @@ public:
 	void reduceHealth();
 
 	void soldierThink(SoldierData);
-	void soldierAct(SoldierData);
-	void soldierPanic(SoldierData);
-	void panicCheck(SoldierData);
 
 	bool mapGenerated; //hacky way of doing it, REVISE
 
 	void calculateBraveryRating();
-	void interpretOrders(Platoon*);
 	
 	void hunkerDown();
 	bool needsToMove;
@@ -87,8 +86,6 @@ public:
 	bool getLeaderIsDead();
 	void setLeaderIsDead(bool);
 
-	void flee(SoldierData);
-	void flank(SoldierData);
 
 	Soldier* getCurrentTarget();
 	void setCurrentTarget(Soldier*);
@@ -99,10 +96,11 @@ public:
 	int getBraveryRating();
 	void setBraveryRating(int);
 
+	void setInRange(bool);
+	bool getInRange();
+
 	Weapon* getWeapon();
 	void setUpWeapon(WeaponTypes);
-
-	void checkForCover();
 
 private:
 	Soldier* target;
@@ -127,6 +125,7 @@ private:
 	int actualBraveryRating; //this integer will be a modifyable value which controls if the soldier actually does something under stress
 	
 	Weapon* equippedWeapon;
+	TacticsCodec* brain;
 
 	std::vector<std::pair<int, int>> map;
 };

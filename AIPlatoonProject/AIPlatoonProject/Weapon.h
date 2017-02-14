@@ -3,6 +3,8 @@
 #include "Platoon.h"
 #include "Soldier.h"
 
+class Soldier;
+
 class Weapon
 {
 public:
