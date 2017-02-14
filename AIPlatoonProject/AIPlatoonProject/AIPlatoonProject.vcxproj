@@ -125,6 +125,7 @@
     <ClCompile Include="Platoon.cpp" />
     <ClCompile Include="PlatoonSection.cpp" />
     <ClCompile Include="Soldier.cpp" />
+    <ClCompile Include="TacticsCodec.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainManager.cpp" />
     <ClCompile Include="Toolbox.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="Soldier.h" />
     <ClInclude Include="SoldierData.h" />
     <ClInclude Include="SoldierStates.h" />
+    <ClInclude Include="TacticsCodec.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TerrainManager.h" />
     <ClInclude Include="Toolbox.h" />

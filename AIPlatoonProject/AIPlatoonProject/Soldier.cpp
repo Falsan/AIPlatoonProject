@@ -8,277 +8,19 @@ Soldier::Soldier()
 	setHealth(20);
 	needsToMove = false;
 	leaderIsDead = false;
+	brain = new TacticsCodec;
 
 }
 
 Soldier::~Soldier()
 {
+	delete brain;
 	delete target;
 }
 
 void Soldier::soldierThink(SoldierData _SD)
 {
-	if (state == panicked)
-	{
-		setFleeing(true);
-		int random = rand() % 3 + 1;
-		if (random == 1)
-		{
-			flee(_SD);
-		}
-		else
-		{
-			state = aliveAndWell;
-			actualBraveryRating++;
-		}
-		
-		actualBraveryRating++;
-	}
-	else
-	{
-		if (gettingShotAt == true)
-		{
-			actualBraveryRating--;
-			actualBraveryRating--;
-		}
-		if (shooting == true)
-		{
-			actualBraveryRating--;
-		}
-		if (leaderIsDead == true)
-		{
-			actualBraveryRating--;
-		}
-
-		if (actualBraveryRating < 10)
-		{
-
-		}
-		else
-		{
-			actualBraveryRating++;
-		}
-
-		//if all of these are false no sensible soldier would not obey a direct order
-		if (gettingShotAt == false && shooting == false && fleeing == false && leaderIsDead == false)
-		{
-			soldierAct(_SD);
-
-		}
-		else
-		{
-			if (actualBraveryRating < 4)
-			{
-				panicCheck(_SD);
-			}
-			else
-			{
-				soldierAct(_SD);
-			}
-		}
-	}
-	clearCommandList();
-	setGettingShotAt(false);
-}
-
-void Soldier::panicCheck(SoldierData _SD)
-{
-	int random = rand() % 100 + 1;
-
-	if (random > 75)
-	{
-		soldierPanic(_SD);
-	}
-	else
-	{
-		actualBraveryRating++;
-		soldierAct(_SD);
-	}
-}
-
-void Soldier::soldierAct(SoldierData _SD)
-{
-	if (currentOrder == "")
-	{
-		if (Toolbox::getDistanceOfOfficer(_SD.m_platoonSection, this, _SD.m_terrainManager))
-		{
-			
-		}
-		else
-		{
-			interpretOrders(_SD.enemyPlatoon);
-		}
-		//currentOrder = "findCover";
-		//commandList.push_back("findCover");
-	}
-
-	if (commandList.size() > 0)
-	{
-		pathFindToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-		executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
-	}
-	else if (commandList.size() == 0)
-	{
-		if (mapGenerated == false)
-		{
-			generateMapToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-		}
-		pathFindToGoal(_SD.m_terrainManager->terrainSquares[goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-		executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
-	}
-}
-
-void Soldier::interpretOrders(Platoon* enemyPlatoon)
-{
-	bool validTarget = false;
-	//check to see if there's anything to shoot at
-	for (auto iter2 = 0; iter2 != enemyPlatoon->platoonSections.size(); iter2++)
-	{
-		for (auto iter = 0; iter < enemyPlatoon->platoonSections[iter2]->soldiers.size(); iter++)
-		{
-			if (enemyPlatoon->platoonSections[iter2]->soldiers[iter]->getState() == aliveAndWell)
-			{
-				validTarget = true;
-				break;
-			}
-		}
-	}
-	if (validTarget == true)
-	{
-		checkRange(enemyPlatoon);
-		if (inRange == true)
-		{
-			commandList.push_back("fire");
-		}
-		else
-		{
-			int random = rand() % 2 + 1;
-			if (random == 1)
-			{
-				commandList.push_back("advance");
-			}
-			else if (random == 2)
-			{
-				checkForCover();
-			}
-		}
-	}
-
-}
-
-void Soldier::checkForCover()
-{
-	if (inCover == false)
-	{
-		if (needsToMove == false)
-		{
-			commandList.push_back("findCover");
-			needsToMove = true;
-		}
-		else
-		{
-			if (prevCommandList.size() > 0)
-			{
-				commandList.push_back(prevCommandList.front());
-			}
-			needsToMove = false;
-		}
-		//currentOrder = "findCover";
-	}
-	else
-	{
-		commandList.push_back("hunkerDown");
-		needsToMove = false;
-	}
-}
-
-void Soldier::flank(SoldierData _SD)
-{
-	std::pair<float, Soldier*> pair = Toolbox::findDistanceOfEnemiesAndTarget(_SD.enemyPlatoon ,this);
-
-	float distance = pair.first; //need to get the x and y values of distance for moving around the enemy
-	target = pair.second;
-}
-
-void Soldier::soldierPanic(SoldierData _SD)
-{
-	Toolbox::printDebugMessage("Panic");
-	state = panicked;
-}
-
-void Soldier::flee(SoldierData _SD)
-{
-	Toolbox::printDebugMessage("Flee");
-	
-	addCommandToList("hunkerDown");
-
-	soldierAct(_SD);
-}
-
-void Soldier::advance(Platoon* enemyPlatoon, TerrainManager* terrainManager, Soldier* leader)
-{
-	Toolbox::printDebugMessage("Forward");
-	//target = nullptr;
-	float distance = 20000000.0f;
-	for (auto iter2 = 0; iter2 != enemyPlatoon->platoonSections.size(); iter2++)
-	{
-		for (auto iter = 0; enemyPlatoon->platoonSections[iter2]->soldiers.size() > iter; iter++)
-		{
-			if (enemyPlatoon->platoonSections[iter2]->soldiers[iter]->getState() == aliveAndWell)
-			{
-				float newDistanceX = enemyPlatoon->platoonSections[iter2]->soldiers[iter]->shape.getPosition().x - this->getPosition().x;
-				float newDistanceY = enemyPlatoon->platoonSections[iter2]->soldiers[iter]->shape.getPosition().y - this->getPosition().y;
-
-				newDistanceX = newDistanceX * newDistanceX;
-				newDistanceY = newDistanceY * newDistanceY;
-
-				float newDistance = newDistanceX + newDistanceY;
-
-				//newDistance = newDistance / newDistance;
-
-				//sf::Vector2f newDistance = this->getPosition() - terrainManager->terrainSquares[iter]->shape.getPosition();
-				if (newDistance < distance)
-				{
-					target = enemyPlatoon->platoonSections[iter2]->soldiers[iter];
-					distance = newDistance;
-					//terrainManager->setGoalSquare(iter);
-					//goalSquare = iter;
-				}
-				else
-				{
-
-				}
-			}
-			else
-			{
-
-			}
-		}
-	}
-
-	//sf::Vector2f midpoint = Toolbox::findMidPoint(this->getPosition(), target->getPosition());
-
-	clearCommandList();
-	generateMapToGoal(target->getPosition(), terrainManager);
-	pathFindToGoal(target->getPosition(), terrainManager);
-	executeCommand(terrainManager, leader, enemyPlatoon);
-	//clearCommandList();
-}
-
-void Soldier::checkRange(Platoon* enemyPlatoon)
-{
-	float distance = Toolbox::findDistanceOfEnemies(enemyPlatoon, this);
-
-	if (distance < 100000.0f)
-	{
-		inRange = true;
-
-		//delete target;
-	}
-	else
-	{
-		inRange = false;
-	}
+	brain->think(_SD, this);
 }
 
 void Soldier::shoot(Platoon* enemyPlatoon)
@@ -383,7 +125,8 @@ void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader, Pl
 			}
 			else if (commandList.front() == "advance")
 			{
-				advance(enemyPlatoon, terrainManager, leader);
+				brain->advance(enemyPlatoon, terrainManager, leader, this);
+				
 				setShooting(false);
 				excecuting = false;
 			}
@@ -894,4 +637,14 @@ void Soldier::setUpWeapon(WeaponTypes loadout)
 {
 	equippedWeapon->setWeaponType(loadout);
 	equippedWeapon->setupAmmoCapacity();
+}
+
+void Soldier::setInRange(bool toSet)
+{
+	inRange = toSet;
+}
+
+bool Soldier::getInRange()
+{
+	return inRange;
 }
