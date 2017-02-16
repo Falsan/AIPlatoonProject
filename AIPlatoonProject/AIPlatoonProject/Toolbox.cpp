@@ -63,6 +63,8 @@ sf::Vector2f Toolbox::findMidPoint(sf::Vector2f firstVector, sf::Vector2f second
 	return midpoint;
 }
 
+//void Toolbox::
+
 bool Toolbox::getDistanceOfOfficer(PlatoonSection* thisPlatoon, Soldier* self, TerrainManager* terrainManager)
 {
 	float distance = 20000000.0f;

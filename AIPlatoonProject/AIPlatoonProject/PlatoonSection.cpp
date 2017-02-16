@@ -48,14 +48,17 @@ void PlatoonSection::interpretTactics()
 	if (numberOfDeadSoldiers >= half)
 	{
 		command = "defend";
+		Toolbox::printDebugMessage("Defend");
 	}
 	if (numberOfFleeingSoldiers > half)
 	{
 		command = "rally";
+		Toolbox::printDebugMessage("Rally");
 	}
 	if (numberOfDeadSoldiers < half)
 	{
 		command = "attack";
+		Toolbox::printDebugMessage("Attack");
 	}
 
 	giveOrders();

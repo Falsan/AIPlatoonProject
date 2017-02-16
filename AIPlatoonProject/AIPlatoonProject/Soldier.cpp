@@ -207,6 +207,11 @@ void Soldier::findCoverTogether(TerrainManager* terrainManager, Soldier* leader)
 	}
 }
 
+void Soldier::retreat(Platoon* enemyPlatoon)
+{
+	
+}
+
 void Soldier::generateMapToGoal(sf::Vector2f goalPos, TerrainManager* terrainManager)
 {
 
