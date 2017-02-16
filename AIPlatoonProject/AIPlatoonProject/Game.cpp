@@ -182,6 +182,7 @@ void Game::handleInput()
 		{
 			for (auto iter2 = 0; iter2 != platoon1->platoonSections.size(); iter2++)
 			{
+				platoon1->platoonSections[iter2]->interpretTactics();
 
 				for (auto iter = 0; iter != platoon1->platoonSections[iter2]->soldiers.size(); iter++)
 				{
@@ -228,7 +229,7 @@ void Game::handleInput()
 			
 			for (auto iter2 = 0; iter2 != platoon2->platoonSections.size(); iter2++)
 			{
-				
+				platoon2->platoonSections[iter2]->interpretTactics();
 				for (auto iter = 0; iter != platoon2->platoonSections[iter2]->soldiers.size(); iter++)
 				{
 					if (platoon2->platoonSections[iter2]->soldiers[iter]->getState() != dead)

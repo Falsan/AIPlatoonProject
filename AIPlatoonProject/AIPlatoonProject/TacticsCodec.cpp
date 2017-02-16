@@ -104,6 +104,18 @@ void TacticsCodec::act(SoldierData _SD, Soldier* self)
 		//currentOrder = "findCover";
 		//commandList.push_back("findCover");
 	}
+	else if (currentOrder == "attack")
+	{
+		interpretOrders(_SD.enemyPlatoon, self);
+	}
+	else if (currentOrder == "defend")
+	{
+		defend(_SD.m_terrainManager, _SD.enemyPlatoon, _SD.m_platoonSection, self);
+	}
+	else if (currentOrder == "rally")
+	{
+		rally(_SD.m_platoonSection);
+	}
 
 	if (self->commandList.size() > 0)
 	{
@@ -118,6 +130,55 @@ void TacticsCodec::act(SoldierData _SD, Soldier* self)
 		}
 		self->pathFindToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
 		self->executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
+	}
+}
+
+void TacticsCodec::rally(PlatoonSection* _currentPlatoonSection)
+{
+	for (auto iter = 0; iter < _currentPlatoonSection->soldiers.size(); iter++)
+	{
+		_currentPlatoonSection->soldiers[iter]
+			->setActualBraveryRating(_currentPlatoonSection
+				->soldiers[iter]->getActualBraveryRating() + 2);
+	}
+}
+
+void TacticsCodec::defend(TerrainManager* terrainManager, Platoon* enemyPlatoon, PlatoonSection* _platoonSection , Soldier* self)
+{
+	if (!self->getIsInCover())
+	{
+		if (_platoonSection->soldiers[_platoonSection->getLeader()]->getLeaderIsDead() == false)
+		{
+			self->findCoverTogether(terrainManager, _platoonSection->soldiers[_platoonSection->getLeader()]);
+		}
+		else
+		{
+			self->findCover(terrainManager);
+		}
+	}
+	else
+	{
+		bool validTarget = false;
+		//check to see if there's anything to shoot at
+		for (auto iter2 = 0; iter2 != enemyPlatoon->platoonSections.size(); iter2++)
+		{
+			for (auto iter = 0; iter < enemyPlatoon->platoonSections[iter2]->soldiers.size(); iter++)
+			{
+				if (enemyPlatoon->platoonSections[iter2]->soldiers[iter]->getState() == aliveAndWell)
+				{
+					validTarget = true;
+					break;
+				}
+			}
+		}
+		if (validTarget == true)
+		{
+			checkRange(enemyPlatoon, self);
+			if (self->getInRange() == true)
+			{
+				self->commandList.push_back("fire");
+			}
+		}
 	}
 }
 
@@ -272,4 +333,14 @@ void TacticsCodec::checkRange(Platoon* enemyPlatoon, Soldier* self)
 	{
 		self->setInRange(false);
 	}
+}
+
+std::string TacticsCodec::getOrder()
+{
+	return currentOrder;
+}
+
+void TacticsCodec::setOrder(std::string toSet)
+{
+	currentOrder = toSet;
 }

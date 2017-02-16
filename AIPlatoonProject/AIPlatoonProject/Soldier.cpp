@@ -200,7 +200,7 @@ void Soldier::findCoverTogether(TerrainManager* terrainManager, Soldier* leader)
 		//sf::Vector2f distance = sf::Vector2f(100.0f, 100.0f);
 		float distance = 2000000.0f;
 
-		std::pair<sf::Vector2f, float> pair = Toolbox::findGoalSquare(terrainManager, this); //MAY BE AN ISSUE WITH THIS "THIS"
+		std::pair<sf::Vector2f, float> pair = Toolbox::findGoalSquare(terrainManager, leader); //MAY BE AN ISSUE WITH THIS "THIS"
 		
 		goalPosition = pair.first;
 		distance = pair.second;
@@ -647,4 +647,14 @@ void Soldier::setInRange(bool toSet)
 bool Soldier::getInRange()
 {
 	return inRange;
+}
+
+TacticsCodec* Soldier::getTactics()
+{
+	return brain;
+}
+
+void Soldier::setTactics(TacticsCodec* toSet)
+{
+	brain = toSet;
 }
