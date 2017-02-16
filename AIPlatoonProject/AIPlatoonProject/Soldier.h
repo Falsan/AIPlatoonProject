@@ -102,6 +102,9 @@ public:
 	Weapon* getWeapon();
 	void setUpWeapon(WeaponTypes);
 
+	TacticsCodec* getTactics();
+	void setTactics(TacticsCodec*);
+
 private:
 	Soldier* target;
 	bool isLeader;

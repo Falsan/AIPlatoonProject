@@ -29,21 +29,43 @@ void PlatoonSection::addSoldier()
 
 void PlatoonSection::interpretTactics()
 {
-	if (command == "")
+	int half = soldiers.size() / 2;
+	int numberOfDeadSoldiers = 0;
+	int numberOfFleeingSoldiers = 0;
+
+	for (auto iter = 0; iter < soldiers.size(); iter++)
 	{
-		chooseLeader();
+		if (soldiers[iter]->getState() == dead)
+		{
+			numberOfDeadSoldiers++;
+		}
+		if (soldiers[iter]->getState() == panicked)
+		{
+			numberOfFleeingSoldiers++;
+		}
 	}
-	else
+
+	if (numberOfDeadSoldiers >= half)
 	{
-		giveOrders();
+		command = "defend";
 	}
+	if (numberOfFleeingSoldiers > half)
+	{
+		command = "rally";
+	}
+	if (numberOfDeadSoldiers < half)
+	{
+		command = "attack";
+	}
+
+	giveOrders();
 }
 
 void PlatoonSection::giveOrders()
 {
 	for (auto iter = 0; iter < soldiers.size(); iter++)
 	{
-		soldiers[iter]->setOrder(command);
+		soldiers[iter]->getTactics()->setOrder(command);
 	}
 
 	setCommand("");
