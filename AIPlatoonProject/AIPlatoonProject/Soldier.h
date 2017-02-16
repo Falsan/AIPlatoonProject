@@ -42,6 +42,7 @@ public:
 	void moveDown(TerrainManager*);
 	void moveRight(TerrainManager*);
 	void shoot(Platoon*);
+	void retreat(Platoon*);
 
 
 	void setState(SoldierStates);
