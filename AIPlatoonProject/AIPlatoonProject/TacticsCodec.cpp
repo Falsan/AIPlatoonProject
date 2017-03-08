@@ -91,93 +91,50 @@ void TacticsCodec::panicCheck(SoldierData _SD, Soldier* self)
 
 void TacticsCodec::act(SoldierData _SD, Soldier* self)
 {
-	if (currentOrder == "")
+	if (Toolbox::getDistanceOfOfficer(_SD.m_platoonSection, self, _SD.m_terrainManager))
 	{
-		if (Toolbox::getDistanceOfOfficer(_SD.m_platoonSection, self, _SD.m_terrainManager))
-		{
-
-		}
-		else
-		{
-			interpretOrders(_SD.enemyPlatoon, self);
-		}
-		//currentOrder = "findCover";
-		//commandList.push_back("findCover");
-	}
-	else if (currentOrder == "attack")
-	{
-		interpretOrders(_SD.enemyPlatoon, self);
-	}
-	else if (currentOrder == "defend")
-	{
-		defend(_SD.m_terrainManager, _SD.enemyPlatoon, _SD.m_platoonSection, self);
-	}
-	else if (currentOrder == "rally")
-	{
-		rally(_SD.m_platoonSection);
-	}
-
-	if (self->commandList.size() > 0)
-	{
-		self->pathFindToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-		self->executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
-	}
-	else if (self->commandList.size() == 0)
-	{
-		if (self->mapGenerated == false)
-		{
-			self->generateMapToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-		}
-		self->pathFindToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-		self->executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
-	}
-}
-
-void TacticsCodec::rally(PlatoonSection* _currentPlatoonSection)
-{
-	for (auto iter = 0; iter < _currentPlatoonSection->soldiers.size(); iter++)
-	{
-		_currentPlatoonSection->soldiers[iter]
-			->setActualBraveryRating(_currentPlatoonSection
-				->soldiers[iter]->getActualBraveryRating() + 2);
-	}
-}
-
-void TacticsCodec::defend(TerrainManager* terrainManager, Platoon* enemyPlatoon, PlatoonSection* _platoonSection , Soldier* self)
-{
-	if (!self->getIsInCover())
-	{
-		if (_platoonSection->soldiers[_platoonSection->getLeader()]->getLeaderIsDead() == false)
-		{
-			self->findCoverTogether(terrainManager, _platoonSection->soldiers[_platoonSection->getLeader()]);
-		}
-		else
-		{
-			self->findCover(terrainManager);
-		}
+		
 	}
 	else
 	{
-		bool validTarget = false;
-		//check to see if there's anything to shoot at
-		for (auto iter2 = 0; iter2 != enemyPlatoon->platoonSections.size(); iter2++)
+		if (currentOrder == "")
 		{
-			for (auto iter = 0; iter < enemyPlatoon->platoonSections[iter2]->soldiers.size(); iter++)
-			{
-				if (enemyPlatoon->platoonSections[iter2]->soldiers[iter]->getState() == aliveAndWell)
-				{
-					validTarget = true;
-					break;
-				}
-			}
+			interpretOrders(_SD.enemyPlatoon, self);
 		}
-		if (validTarget == true)
+		else if (currentOrder == "attack")
 		{
-			checkRange(enemyPlatoon, self);
+			checkRange(_SD.enemyPlatoon, self);
 			if (self->getInRange() == true)
 			{
 				self->commandList.push_back("fire");
 			}
+			else
+			{
+				self->commandList.push_back("advance");
+			}
+
+		}
+		else if (currentOrder == "defend")
+		{
+			if (self->getIsInCover() == false)
+			{
+
+			}
+		}
+
+		if (self->commandList.size() > 0)
+		{
+			self->pathFindToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
+			self->executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
+		}
+		else if (self->commandList.size() == 0)
+		{
+			if (self->mapGenerated == false)
+			{
+				self->generateMapToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
+			}
+			self->pathFindToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
+			self->executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
 		}
 	}
 }
@@ -280,8 +237,8 @@ void TacticsCodec::advance(Platoon* enemyPlatoon, TerrainManager* terrainManager
 		{
 			if (enemyPlatoon->platoonSections[iter2]->soldiers[iter]->getState() == aliveAndWell)
 			{
-				float newDistanceX = enemyPlatoon->platoonSections[iter2]->soldiers[iter]->shape.getPosition().x - self->getPosition().x;
-				float newDistanceY = enemyPlatoon->platoonSections[iter2]->soldiers[iter]->shape.getPosition().y - self->getPosition().y;
+				float newDistanceX = enemyPlatoon->platoonSections[iter2]->soldiers[iter]->shape.getPosition().x - self->shape.getPosition().x;
+				float newDistanceY = enemyPlatoon->platoonSections[iter2]->soldiers[iter]->shape.getPosition().y - self->shape.getPosition().y;
 
 				newDistanceX = newDistanceX * newDistanceX;
 				newDistanceY = newDistanceY * newDistanceY;
@@ -313,8 +270,8 @@ void TacticsCodec::advance(Platoon* enemyPlatoon, TerrainManager* terrainManager
 	//sf::Vector2f midpoint = Toolbox::findMidPoint(this->getPosition(), target->getPosition());
 
 	self->clearCommandList();
-	self->generateMapToGoal(self->getCurrentTarget()->getPosition(), terrainManager);
-	self->pathFindToGoal(self->getCurrentTarget()->getPosition(), terrainManager);
+	self->generateMapToGoal(self->getCurrentTarget()->shape.getPosition(), terrainManager);
+	self->pathFindToGoal(self->getCurrentTarget()->shape.getPosition(), terrainManager);
 	self->executeCommand(terrainManager, leader, enemyPlatoon);
 	//clearCommandList();
 }
@@ -333,11 +290,6 @@ void TacticsCodec::checkRange(Platoon* enemyPlatoon, Soldier* self)
 	{
 		self->setInRange(false);
 	}
-}
-
-std::string TacticsCodec::getOrder()
-{
-	return currentOrder;
 }
 
 void TacticsCodec::setOrder(std::string toSet)
