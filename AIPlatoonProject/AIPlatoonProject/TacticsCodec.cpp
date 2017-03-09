@@ -91,12 +91,13 @@ void TacticsCodec::panicCheck(SoldierData _SD, Soldier* self)
 
 void TacticsCodec::act(SoldierData _SD, Soldier* self)
 {
-	if (Toolbox::getDistanceOfOfficer(_SD.m_platoonSection, self, _SD.m_terrainManager))
-	{
-		
-	}
-	else
-	{
+	Toolbox::getDistanceOfOfficer(_SD.m_platoonSection, self, _SD.m_terrainManager);
+	//if (Toolbox::getDistanceOfOfficer(_SD.m_platoonSection, self, _SD.m_terrainManager))
+	//{
+		//Toolbox::printDebugMessage("hit");
+	//}
+	//else
+	//{
 		if (currentOrder == "")
 		{
 			interpretOrders(_SD.enemyPlatoon, self);
@@ -136,7 +137,7 @@ void TacticsCodec::act(SoldierData _SD, Soldier* self)
 			self->pathFindToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
 			self->executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
 		}
-	}
+	//}
 }
 
 void TacticsCodec::interpretOrders(Platoon* enemyPlatoon, Soldier* self)
@@ -268,12 +269,18 @@ void TacticsCodec::advance(Platoon* enemyPlatoon, TerrainManager* terrainManager
 	}
 
 	//sf::Vector2f midpoint = Toolbox::findMidPoint(this->getPosition(), target->getPosition());
+	if (self->getCurrentTarget() == nullptr)
+	{
 
-	self->clearCommandList();
-	self->generateMapToGoal(self->getCurrentTarget()->shape.getPosition(), terrainManager);
-	self->pathFindToGoal(self->getCurrentTarget()->shape.getPosition(), terrainManager);
-	self->executeCommand(terrainManager, leader, enemyPlatoon);
-	//clearCommandList();
+	}
+	else
+	{
+		self->clearCommandList();
+		self->generateMapToGoal(self->getCurrentTarget()->shape.getPosition(), terrainManager);
+		self->pathFindToGoal(self->getCurrentTarget()->shape.getPosition(), terrainManager);
+		self->executeCommand(terrainManager, leader, enemyPlatoon);
+		//clearCommandList();
+	}
 }
 
 void TacticsCodec::checkRange(Platoon* enemyPlatoon, Soldier* self)

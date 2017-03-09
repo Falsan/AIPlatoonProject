@@ -105,7 +105,7 @@ bool Toolbox::getDistanceOfOfficer(PlatoonSection* thisPlatoon, Soldier* self, T
 		}
 		
 	}
-	if (distance > 20000)
+	if (distance > 2000)
 	{
 		for (auto iter2 = 0; terrainManager->terrainSquares.size() > iter2; iter2++)
 		{
@@ -121,6 +121,7 @@ bool Toolbox::getDistanceOfOfficer(PlatoonSection* thisPlatoon, Soldier* self, T
 		}
 
 		self->generateMapToGoal(terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), terrainManager);
+		self->pathFindToGoal(terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), terrainManager);
 		return true;
 	}
 	else
