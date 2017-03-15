@@ -126,7 +126,112 @@ void Game::init()
 
 void Game::tick()
 {
+	while (window.isOpen())
+	{
+		if (gameState == play)
+		{
+			for (auto iter2 = 0; iter2 != platoon1->platoonSections.size(); iter2++)
+			{
+				platoon1->platoonSections[iter2]->interpretTactics();
 
+				for (auto iter = 0; iter != platoon1->platoonSections[iter2]->soldiers.size(); iter++)
+				{
+					if (platoon1->platoonSections[iter2]->soldiers[iter]->getState() != dead)
+					{
+						if (platoon1->platoonSections[iter2]->soldiers[iter]->shape.getPosition() !=
+							terrainManager->terrainSquares[platoon1->platoonSections[iter2]->soldiers[iter]->goalSquare]->shape.getPosition())
+						{
+							m_SD1.m_platoonSection = platoon1->platoonSections[iter2];
+							platoon1->platoonSections[iter2]->soldiers[iter]->soldierThink(m_SD1);
+
+							//debugList = testSoldier->commandList;
+							//testPlatoon->soldiers[iter]->clearCommandList();
+							sf::sleep(sf::milliseconds(1));
+							if (platoon1->platoonSections[iter2]->soldiers[iter]->getShooting() == true)
+							{
+								std::pair<Soldier*, Soldier*> pair;
+								pair.first = platoon1->platoonSections[iter2]->soldiers[iter];
+								pair.second = platoon1->platoonSections[iter2]->soldiers[iter]->getCurrentTarget();
+								shots.push_back(pair);
+							}
+
+						}
+						else
+						{
+							platoon1->platoonSections[iter2]->soldiers[iter]->goalSquare = NULL;
+							Toolbox::printDebugMessage("Arrived at goal");
+							platoon1->platoonSections[iter2]->soldiers[iter]->needsToMove = false;
+							sf::sleep(sf::milliseconds(1));
+							platoon1->platoonSections[iter2]->soldiers[iter]->mapGenerated = false;
+						}
+					}
+
+					if (platoon1->platoonSections[iter2]->soldiers[iter]->getState() == dead &&
+						platoon1->platoonSections[iter2]->soldiers[iter]->getLeader())
+					{
+						for (auto iter4 = 0; iter4 != platoon1->platoonSections[iter2]->soldiers.size(); iter4++)
+						{
+							platoon1->platoonSections[iter2]->soldiers[iter4]->setLeaderIsDead(true);
+						}
+					}
+				}
+			}
+
+			for (auto iter2 = 0; iter2 != platoon2->platoonSections.size(); iter2++)
+			{
+				platoon2->platoonSections[iter2]->interpretTactics();
+				for (auto iter = 0; iter != platoon2->platoonSections[iter2]->soldiers.size(); iter++)
+				{
+					if (platoon2->platoonSections[iter2]->soldiers[iter]->getState() != dead)
+					{
+						if (platoon2->platoonSections[iter2]->soldiers[iter]->shape.getPosition() !=
+							terrainManager->terrainSquares[platoon2->platoonSections[iter2]->soldiers[iter]->goalSquare]->shape.getPosition())
+						{
+							m_SD2.m_platoonSection = platoon2->platoonSections[iter2];
+							platoon2->platoonSections[iter2]->soldiers[iter]->soldierThink(m_SD2);
+
+							//debugList = testSoldier->commandList;
+							//testPlatoon->soldiers[iter]->clearCommandList();
+							sf::sleep(sf::milliseconds(1));
+							if (platoon2->platoonSections[iter2]->soldiers[iter]->getShooting() == true)
+							{
+								std::pair<Soldier*, Soldier*> pair;
+								pair.first = platoon2->platoonSections[iter2]->soldiers[iter];
+								pair.second = platoon2->platoonSections[iter2]->soldiers[iter]->getCurrentTarget();
+								shots.push_back(pair);
+							}
+						}
+						else
+						{
+							terrainManager->terrainSquares[platoon2->platoonSections[iter2]->soldiers[iter]->goalSquare]->setGoal(false);
+							platoon2->platoonSections[iter2]->soldiers[iter]->goalSquare = NULL;
+
+							Toolbox::printDebugMessage("Arrived at goal");
+							platoon2->platoonSections[iter2]->soldiers[iter]->needsToMove = false;
+							sf::sleep(sf::milliseconds(1));
+							platoon2->platoonSections[iter2]->soldiers[iter]->mapGenerated = false;
+						}
+					}
+
+					if (platoon2->platoonSections[iter2]->soldiers[iter]->getState() == dead &&
+						platoon2->platoonSections[iter2]->soldiers[iter]->getLeader())
+					{
+						for (auto iter4 = 0; iter4 != platoon2->platoonSections[iter2]->soldiers.size(); iter4++)
+						{
+							platoon2->platoonSections[iter2]->soldiers[iter4]->setLeaderIsDead(true);
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+
+		}
+
+		resetBoard();
+	}
+	//resetBoard();
 }
 
 void Game::draw()
@@ -178,132 +283,14 @@ void Game::handleInput()
 {
 	while (window.isOpen())
 	{
-		if (gameState == play)
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
 		{
-			for (auto iter2 = 0; iter2 != platoon1->platoonSections.size(); iter2++)
-			{
-				platoon1->platoonSections[iter2]->interpretTactics();
-
-				for (auto iter = 0; iter != platoon1->platoonSections[iter2]->soldiers.size(); iter++)
-				{
-					if (platoon1->platoonSections[iter2]->soldiers[iter]->getState() != dead)
-					{
-						if (platoon1->platoonSections[iter2]->soldiers[iter]->shape.getPosition() !=
-							terrainManager->terrainSquares[platoon1->platoonSections[iter2]->soldiers[iter]->goalSquare]->shape.getPosition())
-						{
-							m_SD1.m_platoonSection = platoon1->platoonSections[iter2];
-							platoon1->platoonSections[iter2]->soldiers[iter]->soldierThink(m_SD1);
-
-							//debugList = testSoldier->commandList;
-							//testPlatoon->soldiers[iter]->clearCommandList();
-							sf::sleep(sf::milliseconds(1));
-							if (platoon1->platoonSections[iter2]->soldiers[iter]->getShooting() == true)
-							{
-								std::pair<Soldier*, Soldier*> pair;
-								pair.first = platoon1->platoonSections[iter2]->soldiers[iter];
-								pair.second = platoon1->platoonSections[iter2]->soldiers[iter]->getCurrentTarget();
-								shots.push_back(pair);
-							}
-							
-						}
-						else
-						{
-							platoon1->platoonSections[iter2]->soldiers[iter]->goalSquare = NULL;
-							Toolbox::printDebugMessage("Arrived at goal");
-							platoon1->platoonSections[iter2]->soldiers[iter]->needsToMove = false;
-							sf::sleep(sf::milliseconds(1));
-							platoon1->platoonSections[iter2]->soldiers[iter]->mapGenerated = false;
-						}
-					}
-
-					if (platoon1->platoonSections[iter2]->soldiers[iter]->getState() == dead &&
-						platoon1->platoonSections[iter2]->soldiers[iter]->getLeader())
-					{
-						for (auto iter4 = 0; iter4 != platoon1->platoonSections[iter2]->soldiers.size(); iter4++)
-						{
-							platoon1->platoonSections[iter2]->soldiers[iter4]->setLeaderIsDead(true);
-						}
-					}
-				}
-			}
-			
-			for (auto iter2 = 0; iter2 != platoon2->platoonSections.size(); iter2++)
-			{
-				platoon2->platoonSections[iter2]->interpretTactics();
-				for (auto iter = 0; iter != platoon2->platoonSections[iter2]->soldiers.size(); iter++)
-				{
-					if (platoon2->platoonSections[iter2]->soldiers[iter]->getState() != dead)
-					{
-						if (platoon2->platoonSections[iter2]->soldiers[iter]->shape.getPosition() !=
-							terrainManager->terrainSquares[platoon2->platoonSections[iter2]->soldiers[iter]->goalSquare]->shape.getPosition())
-						{
-							m_SD2.m_platoonSection = platoon2->platoonSections[iter2];
-							platoon2->platoonSections[iter2]->soldiers[iter]->soldierThink(m_SD2);
-
-							//debugList = testSoldier->commandList;
-							//testPlatoon->soldiers[iter]->clearCommandList();
-							sf::sleep(sf::milliseconds(1));
-							if (platoon2->platoonSections[iter2]->soldiers[iter]->getShooting() == true)
-							{
-								std::pair<Soldier*, Soldier*> pair;
-								pair.first = platoon2->platoonSections[iter2]->soldiers[iter];
-								pair.second = platoon2->platoonSections[iter2]->soldiers[iter]->getCurrentTarget();
-								shots.push_back(pair);
-							}
-						}
-						else
-						{
-							terrainManager->terrainSquares[platoon2->platoonSections[iter2]->soldiers[iter]->goalSquare]->setGoal(false);
-							platoon2->platoonSections[iter2]->soldiers[iter]->goalSquare = NULL;
-							
-							Toolbox::printDebugMessage("Arrived at goal");
-							platoon2->platoonSections[iter2]->soldiers[iter]->needsToMove = false;
-							sf::sleep(sf::milliseconds(1));
-							platoon2->platoonSections[iter2]->soldiers[iter]->mapGenerated = false;
-						}
-					}
-
-					if (platoon2->platoonSections[iter2]->soldiers[iter]->getState() == dead &&
-						platoon2->platoonSections[iter2]->soldiers[iter]->getLeader())
-					{
-						for (auto iter4 = 0; iter4 != platoon2->platoonSections[iter2]->soldiers.size(); iter4++)
-						{
-							platoon2->platoonSections[iter2]->soldiers[iter4]->setLeaderIsDead(true);
-						}
-					}
-				}
-			}
-			/*
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-			{
-				testSoldier->moveUp();
-				sf::sleep(sf::milliseconds(100));
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-			{
-				testSoldier->moveDown();
-				sf::sleep(sf::milliseconds(100));
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-			{
-				testSoldier->moveLeft();
-				sf::sleep(sf::milliseconds(100));
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-			{
-				testSoldier->moveRight();
-				sf::sleep(sf::milliseconds(100));
-			}*/
-
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
-			{
-				gameState = pause;
-			}
-
+			gameState = pause;
 			logPrinted = false;
 		}
 
-		else if(gameState == pause)
+
+		else if (gameState == pause)
 		{
 			if (logPrinted == false)
 			{
@@ -311,7 +298,7 @@ void Game::handleInput()
 
 				for (auto iter = 0; iter != debugList.size(); iter++)
 				{
-					Toolbox::printDebugMessage(debugList[iter]);
+				Toolbox::printDebugMessage(debugList[iter]);
 				}
 
 				Toolbox::printDebugMessage("End of command log for test soldier");
@@ -319,14 +306,14 @@ void Game::handleInput()
 				Toolbox::printDebugMessage("Positions of test soldiers is: ");
 				for (auto iter = 0; iter < platoon1->soldiers.size(); iter++)
 				{
-					Toolbox::printDebugMessage(platoon1->soldiers[iter]->getPosition());
+				Toolbox::printDebugMessage(platoon1->soldiers[iter]->getPosition());
 				}
 				Toolbox::printDebugMessage("End of position: ");
 
 				Toolbox::printDebugMessage("Goals of test soldiers is: ");
 				for (auto iter = 0; iter < platoon1->soldiers.size(); iter++)
 				{
-					Toolbox::printDebugMessage(platoon1->soldiers[iter]->goalSquare);
+				Toolbox::printDebugMessage(platoon1->soldiers[iter]->goalSquare);
 				}
 				Toolbox::printDebugMessage("End of goals: ");
 
@@ -345,15 +332,10 @@ void Game::handleInput()
 			{
 				gameState = play;
 			}
-		}
-		else
-		{
 
 		}
-		
 	}
-
-	resetBoard();
+	
 }
 
 void Game::resetBoard()

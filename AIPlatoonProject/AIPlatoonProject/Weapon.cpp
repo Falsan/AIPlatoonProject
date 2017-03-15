@@ -13,7 +13,7 @@ void Weapon::shoot(Platoon* enemyPlatoon, Soldier* target, bool inRange, Soldier
 			missChance = self->getActualBraveryRating() - self->getBraveryRating();
 		}
 
-		hit + missChance;
+		
 
 		Toolbox::printDebugMessage("Pew");
 		target->setGettingShotAt(true);
