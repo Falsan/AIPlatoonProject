@@ -228,14 +228,14 @@ void Soldier::generateMapToGoal(sf::Vector2f goalPos, TerrainManager* terrainMan
 		long newDistance = newDistanceX + newDistanceY;
 		newDistance = newDistance / 10;
 
-		//if (terrainManager->terrainSquares[iter]->getIsPassable() == false || terrainManager->terrainSquares[iter]->getIsOccupied() == true)
-		//{
-		//	newDistance = LONG_MAX;
-		//}
-		//if (newDistance > LONG_MAX)
-		//{
-		//	newDistance = newDistance - 1;
-		//}
+		if (terrainManager->terrainSquares[iter]->getIsOccupied() == true)
+		{
+			newDistance = LONG_MAX;
+		}
+		if (newDistance > LONG_MAX)
+		{
+			newDistance = newDistance - 1;
+		}
 
 		map[iter].first = iter;
 		map[iter].second = newDistance;
@@ -367,6 +367,8 @@ sf::Vector2f Soldier::getPosition()
 
 void Soldier::moveUp(TerrainManager* terrainManager)
 {
+	sf::Vector2f previousPosition = position;
+
 	if (position.y == 0.0f)
 	{
 	}
@@ -379,7 +381,7 @@ void Soldier::moveUp(TerrainManager* terrainManager)
 		{
 			if (terrainManager->terrainSquares[iter]->shape.getPosition() == shape.getPosition())
 			{
-				//terrainManager->terrainSquares[iter]->setIsOccupied(true);
+				terrainManager->terrainSquares[iter]->setIsOccupied(true);
 				//terrainManager->terrainSquares[iter]->shape.setFillColor(sf::Color::Magenta);
 
 				if (terrainManager->terrainSquares[iter]->getIsCover())
@@ -392,7 +394,7 @@ void Soldier::moveUp(TerrainManager* terrainManager)
 				}
 			}
 
-			if (terrainManager->terrainSquares[iter]->shape.getPosition().y == shape.getPosition().y - 20.0f)
+			if (terrainManager->terrainSquares[iter]->shape.getPosition() == previousPosition)
 			{
 				terrainManager->terrainSquares[iter]->setIsOccupied(false);
 				//terrainManager->terrainSquares[iter]->shape.setFillColor(sf::Color::Blue);
@@ -403,6 +405,8 @@ void Soldier::moveUp(TerrainManager* terrainManager)
 
 void Soldier::moveDown(TerrainManager* terrainManager)
 {
+	sf::Vector2f previousPosition = position;
+
 	if (position.y == 580.0f)
 	{
 
@@ -417,7 +421,7 @@ void Soldier::moveDown(TerrainManager* terrainManager)
 		{
 			if (terrainManager->terrainSquares[iter]->shape.getPosition() == shape.getPosition())
 			{
-				//terrainManager->terrainSquares[iter]->setIsOccupied(true);
+				terrainManager->terrainSquares[iter]->setIsOccupied(true);
 				//terrainManager->terrainSquares[iter]->shape.setFillColor(sf::Color::Magenta);
 
 				if (terrainManager->terrainSquares[iter]->getIsCover())
@@ -430,7 +434,7 @@ void Soldier::moveDown(TerrainManager* terrainManager)
 				}
 			}
 
-			if (terrainManager->terrainSquares[iter]->shape.getPosition().y == shape.getPosition().y + 20.0f)
+			if (terrainManager->terrainSquares[iter]->shape.getPosition() == previousPosition)
 			{
 				terrainManager->terrainSquares[iter]->setIsOccupied(false);
 				//terrainManager->terrainSquares[iter]->shape.setFillColor(sf::Color::Blue);
@@ -441,6 +445,8 @@ void Soldier::moveDown(TerrainManager* terrainManager)
 
 void Soldier::moveLeft(TerrainManager* terrainManager)
 {
+	sf::Vector2f previousPosition = position;
+
 	if (position.x == 0.0f)
 	{
 
@@ -454,7 +460,7 @@ void Soldier::moveLeft(TerrainManager* terrainManager)
 		{
 			if (terrainManager->terrainSquares[iter]->shape.getPosition() == shape.getPosition())
 			{
-				//terrainManager->terrainSquares[iter]->setIsOccupied(true);
+				terrainManager->terrainSquares[iter]->setIsOccupied(true);
 				//terrainManager->terrainSquares[iter]->shape.setFillColor(sf::Color::Magenta);
 
 				if (terrainManager->terrainSquares[iter]->getIsCover())
@@ -467,7 +473,7 @@ void Soldier::moveLeft(TerrainManager* terrainManager)
 				}
 			}
 
-			if (terrainManager->terrainSquares[iter]->shape.getPosition().x == shape.getPosition().x - 20.0f)
+			if (terrainManager->terrainSquares[iter]->shape.getPosition() == previousPosition)
 			{
 				terrainManager->terrainSquares[iter]->setIsOccupied(false);
 				//terrainManager->terrainSquares[iter]->shape.setFillColor(sf::Color::Blue);
@@ -478,6 +484,8 @@ void Soldier::moveLeft(TerrainManager* terrainManager)
 
 void Soldier::moveRight(TerrainManager* terrainManager)
 {
+	sf::Vector2f previousPosition = position;
+
 	if (position.x == 780.0f)
 	{
 
@@ -491,7 +499,7 @@ void Soldier::moveRight(TerrainManager* terrainManager)
 		{
 			if (terrainManager->terrainSquares[iter]->shape.getPosition() == shape.getPosition())
 			{
-				//terrainManager->terrainSquares[iter]->setIsOccupied(true);
+				terrainManager->terrainSquares[iter]->setIsOccupied(true);
 				//terrainManager->terrainSquares[iter]->shape.setFillColor(sf::Color::Magenta);
 
 				if (terrainManager->terrainSquares[iter]->getIsCover())
@@ -504,7 +512,7 @@ void Soldier::moveRight(TerrainManager* terrainManager)
 				}
 			}
 
-			if (terrainManager->terrainSquares[iter]->shape.getPosition().x == shape.getPosition().x + 20.0f)
+			if (terrainManager->terrainSquares[iter]->shape.getPosition() == previousPosition)
 			{
 				terrainManager->terrainSquares[iter]->setIsOccupied(false);
 				//terrainManager->terrainSquares[iter]->shape.setFillColor(sf::Color::Blue);
