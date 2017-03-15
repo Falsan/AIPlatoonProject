@@ -23,10 +23,9 @@ void Soldier::soldierThink(SoldierData _SD)
 	brain->think(_SD, this);
 }
 
+//checks to see if the target is in range before applying damage
 void Soldier::shoot(Platoon* enemyPlatoon)
 {
-	//pew pew
-
 	bool hasTargetInRange = false;
 
 	std::pair<float, Soldier*> pair = Toolbox::findDistanceOfEnemiesAndTarget(enemyPlatoon, this);
@@ -39,7 +38,7 @@ void Soldier::shoot(Platoon* enemyPlatoon)
 		hasTargetInRange = true;
 		inRange = true;
 
-		//delete target;
+		
 	}
 	else
 	{
@@ -48,11 +47,9 @@ void Soldier::shoot(Platoon* enemyPlatoon)
 	}
 
 	equippedWeapon->shoot(enemyPlatoon, target, inRange, this, hasTargetInRange);
-	
-	//delete target;
 }
 
-
+//runs through the top executable command on the command list
 void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader, Platoon* enemyPlatoon)
 {
 	
@@ -97,20 +94,20 @@ void Soldier::executeCommand(TerrainManager* terrainManager, Soldier* leader, Pl
 			{
 				//commandList.erase(commandList.begin());
 				clearCommandList();
-				findCover(terrainManager); //might be something wrong with this function
+				findCover(terrainManager); 
 				generateMapToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
 				pathFindToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
 				setShooting(false);
 				//excecuting = false;
 			}
-			else if (commandList.front() == "findCoverTogether")
-			{
-				setShooting(false);
+			//else if (commandList.front() == "findCoverTogether")
+			//{
+			//	setShooting(false);
 				//findCoverTogether(terrainManager, leader);
 				//clearCommandList();
 				//generateMapToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
 				//pathFindToGoal(terrainManager->terrainSquares[goalSquare]->shape.getPosition(), terrainManager);
-			}
+			//}
 			else if (commandList.front() == "fire")
 			{
 				shoot(enemyPlatoon);
@@ -157,13 +154,14 @@ void Soldier::clearCommandList()
 	}
 }
 
+//uses a number of helper functions to locate cover
 void Soldier::findCover(TerrainManager* terrainManager)
 {
 	Toolbox::printDebugMessage("cover");
 	sf::Vector2f goalPosition = sf::Vector2f(100.0f, 100.0f);
 	//sf::Vector2f distance = sf::Vector2f(100.0f, 100.0f);
 	float distance = 2000000.0f;
-	std::pair<sf::Vector2f, float> pair = Toolbox::findGoalSquare(terrainManager, this); //MAY BE AN ISSUE WITH THIS "THIS"
+	std::pair<sf::Vector2f, float> pair = Toolbox::findGoalSquare(terrainManager, this); 
 
 	goalPosition = pair.first;
 	distance = pair.second;
@@ -188,6 +186,7 @@ bool Soldier::getLeader()
 	return isLeader;
 }
 
+/*
 void Soldier::findCoverTogether(TerrainManager* terrainManager, Soldier* leader)
 {
 	if (this->getLeader())
@@ -200,18 +199,19 @@ void Soldier::findCoverTogether(TerrainManager* terrainManager, Soldier* leader)
 		//sf::Vector2f distance = sf::Vector2f(100.0f, 100.0f);
 		float distance = 2000000.0f;
 
-		std::pair<sf::Vector2f, float> pair = Toolbox::findGoalSquare(terrainManager, leader); //MAY BE AN ISSUE WITH THIS "THIS"
+		std::pair<sf::Vector2f, float> pair = Toolbox::findGoalSquare(terrainManager, leader); 
 		
 		goalPosition = pair.first;
 		distance = pair.second;
 	}
-}
+}*/
 
-void Soldier::retreat(Platoon* enemyPlatoon)
-{
+//void Soldier::retreat(Platoon* enemyPlatoon)
+//{
 	
-}
+//}
 
+//this functions goes through all of the terrain squares and assigns a cost value to all of them
 void Soldier::generateMapToGoal(sf::Vector2f goalPos, TerrainManager* terrainManager)
 {
 
@@ -244,6 +244,7 @@ void Soldier::generateMapToGoal(sf::Vector2f goalPos, TerrainManager* terrainMan
 	mapGenerated = true;
 }
 
+//this function uses the cost values to plot a route towards an objective
 void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManager)
 {
 	if (goalPos.x == NULL && goalPos.y == NULL)
@@ -293,8 +294,7 @@ void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManage
 			}
 		}
 
-			//while (pathfinderPosition != goalPos)
-			//{
+
 			int leastDistance;
 
 			int tempArray[4] = { map[currentUp].second, map[currentDown].second,
@@ -313,37 +313,38 @@ void Soldier::pathFindToGoal(sf::Vector2f goalPos, TerrainManager* terrainManage
 			{
 				addCommandToList("moveDown");
 				pathfinderPosition.y = pathfinderPosition.y + 20.0f;
-				//map[currentDown].second = map[currentDown].second + 100;
+				
 			}
 			else if (temp == map[currentLeft].second)
 			{
 				addCommandToList("moveLeft");
 				pathfinderPosition.x = pathfinderPosition.x - 20.0f;
-				//map[currentLeft].second = map[currentLeft].second + 100;
+				
 			}
 			else if (temp == map[currentRight].second)
 			{
 				addCommandToList("moveRight");
 				pathfinderPosition.x = pathfinderPosition.x + 20.0f;
-				//map[currentRight].second = map[currentRight].second + 100;
+				
 			}
 			else if (temp == map[currentUp].second)
 			{
 				addCommandToList("moveUp");
 				pathfinderPosition.y = pathfinderPosition.y - 20.0f;
-				//map[currentUp].second = map[currentUp].second + 100;
+				
 			}
 			else
 			{
 				Toolbox::printDebugMessage("SomethingWentWrong");
 			}
-			//}
+			
 		}
 	mapGenerated = false;
-	//map.clear();
+	
 }
 
-void Soldier::calculateBraveryRating() //need to run this at setup to assign bravery ratings
+//need to run this at setup to assign bravery ratings
+void Soldier::calculateBraveryRating() 
 {
 	braveryRating = rand() % 6 + 6;
 
@@ -365,6 +366,7 @@ sf::Vector2f Soldier::getPosition()
 	return position;
 }
 
+//moves the soldier up
 void Soldier::moveUp(TerrainManager* terrainManager)
 {
 	sf::Vector2f previousPosition = position;
@@ -403,6 +405,7 @@ void Soldier::moveUp(TerrainManager* terrainManager)
 	}
 }
 
+//moves the soldier down
 void Soldier::moveDown(TerrainManager* terrainManager)
 {
 	sf::Vector2f previousPosition = position;
@@ -443,6 +446,7 @@ void Soldier::moveDown(TerrainManager* terrainManager)
 	}
 }
 
+//moves the soldier left
 void Soldier::moveLeft(TerrainManager* terrainManager)
 {
 	sf::Vector2f previousPosition = position;
@@ -482,6 +486,7 @@ void Soldier::moveLeft(TerrainManager* terrainManager)
 	}
 }
 
+//moves the soldier right
 void Soldier::moveRight(TerrainManager* terrainManager)
 {
 	sf::Vector2f previousPosition = position;

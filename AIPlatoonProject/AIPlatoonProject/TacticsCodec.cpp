@@ -92,17 +92,30 @@ void TacticsCodec::panicCheck(SoldierData _SD, Soldier* self)
 void TacticsCodec::act(SoldierData _SD, Soldier* self)
 {
 	Toolbox::getDistanceOfOfficer(_SD.m_platoonSection, self, _SD.m_terrainManager);
-	//if (Toolbox::getDistanceOfOfficer(_SD.m_platoonSection, self, _SD.m_terrainManager))
-	//{
-		//Toolbox::printDebugMessage("hit");
-	//}
-	//else
-	//{
-		if (currentOrder == "")
+
+	if (currentOrder == "")
+	{
+		interpretOrders(_SD.enemyPlatoon, self);
+	}
+	else if (currentOrder == "attack")
+	{
+		checkRange(_SD.enemyPlatoon, self);
+		if (self->getInRange() == true)
 		{
-			interpretOrders(_SD.enemyPlatoon, self);
+			self->commandList.push_back("fire");
 		}
-		else if (currentOrder == "attack")
+		else
+		{
+			self->commandList.push_back("advance");
+		}
+	}
+	else if (currentOrder == "defend")
+	{
+		if (self->getIsInCover() == false)
+		{
+			self->findCover(_SD.m_terrainManager);
+		}
+		else
 		{
 			checkRange(_SD.enemyPlatoon, self);
 			if (self->getInRange() == true)
@@ -111,33 +124,26 @@ void TacticsCodec::act(SoldierData _SD, Soldier* self)
 			}
 			else
 			{
-				self->commandList.push_back("advance");
-			}
-
-		}
-		else if (currentOrder == "defend")
-		{
-			if (self->getIsInCover() == false)
-			{
-
+				self->commandList.push_back("hunkerDown");
 			}
 		}
+	}
 
-		if (self->commandList.size() > 0)
+	if (self->commandList.size() > 0)
+	{
+		self->pathFindToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
+		self->executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
+	}
+	else if (self->commandList.size() == 0)
+	{
+		if (self->mapGenerated == false)
 		{
-			self->pathFindToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-			self->executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
+			self->generateMapToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
 		}
-		else if (self->commandList.size() == 0)
-		{
-			if (self->mapGenerated == false)
-			{
-				self->generateMapToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-			}
-			self->pathFindToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
-			self->executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
-		}
-	//}
+		self->pathFindToGoal(_SD.m_terrainManager->terrainSquares[self->goalSquare]->shape.getPosition(), _SD.m_terrainManager);
+		self->executeCommand(_SD.m_terrainManager, _SD.m_leader, _SD.enemyPlatoon);
+	}
+
 }
 
 void TacticsCodec::interpretOrders(Platoon* enemyPlatoon, Soldier* self)
