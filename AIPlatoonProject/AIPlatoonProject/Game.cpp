@@ -25,6 +25,7 @@ Game::~Game()
 	delete terrainManager;
 }
 
+//main game loop
 bool Game::runGame()
 {
 	//defaultVideoMode(height, width);
@@ -65,6 +66,7 @@ bool Game::runGame()
 	return true;
 }
 
+//used for initialisation
 void Game::init()
 {
 	window.create(sf::VideoMode(800, 600), "Platoon AI Demo");
@@ -118,12 +120,9 @@ void Game::init()
 			}
 		}
 	}
-
-	//THIS IS THE DEBUG SETTING OF GETTING COVER
-	//platoon1->setCommand("findCoverTogether");
-	//testPlatoon->giveOrders();
 }
 
+//this is the main loop for processing AI decisions
 void Game::tick()
 {
 	while (window.isOpen())
@@ -234,6 +233,7 @@ void Game::tick()
 	//resetBoard();
 }
 
+//this thread handles drawing and rendering
 void Game::draw()
 {
 	while (window.isOpen())
@@ -279,6 +279,8 @@ void Game::draw()
 	}
 }
 
+//mostly this thread is used for debug purposes to allow the display
+//of debug in the console window
 void Game::handleInput()
 {
 	while (window.isOpen())
@@ -289,37 +291,60 @@ void Game::handleInput()
 			logPrinted = false;
 		}
 
-
+		
 		else if (gameState == pause)
 		{
 			if (logPrinted == false)
 			{
-				/*Toolbox::printDebugMessage("Start of command log for test soldier");
-
-				for (auto iter = 0; iter != debugList.size(); iter++)
+				Toolbox::printDebugMessage("Positions of Platoon1 soldiers is: ");
+				for (auto iter2 = 0; iter2 != platoon1->platoonSections.size(); iter2++)
 				{
-				Toolbox::printDebugMessage(debugList[iter]);
+					
+					for (auto iter = 0; iter != platoon1->platoonSections[iter2]->soldiers.size(); iter++)
+					{
+						Toolbox::printDebugMessage(platoon1->platoonSections[iter2]->soldiers[iter]->getPosition());
+					}
+
 				}
+				Toolbox::printDebugMessage("End of positions: ");
 
-				Toolbox::printDebugMessage("End of command log for test soldier");
-
-				Toolbox::printDebugMessage("Positions of test soldiers is: ");
-				for (auto iter = 0; iter < platoon1->soldiers.size(); iter++)
+				Toolbox::printDebugMessage("Goals of Platoon1 soldiers is: ");
+				for (auto iter2 = 0; iter2 != platoon1->platoonSections.size(); iter2++)
 				{
-				Toolbox::printDebugMessage(platoon1->soldiers[iter]->getPosition());
-				}
-				Toolbox::printDebugMessage("End of position: ");
 
-				Toolbox::printDebugMessage("Goals of test soldiers is: ");
-				for (auto iter = 0; iter < platoon1->soldiers.size(); iter++)
-				{
-				Toolbox::printDebugMessage(platoon1->soldiers[iter]->goalSquare);
+					for (auto iter = 0; iter != platoon1->platoonSections[iter2]->soldiers.size(); iter++)
+					{
+						Toolbox::printDebugMessage(platoon1->platoonSections[iter2]->soldiers[iter]->goalSquare);
+					}
+
 				}
 				Toolbox::printDebugMessage("End of goals: ");
 
-				//Toolbox::printDebugMessage("Goal square is: ");
-				//Toolbox::printDebugMessage(terrainManager->terrainSquares[testPlatoon->soldiers[iter]->goalSquare]->shape.getPosition());
-				//Toolbox::printDebugMessage("End of goal square: ");*/
+				Toolbox::printDebugMessage("Positions of Platoon2 soldiers is: ");
+				for (auto iter2 = 0; iter2 != platoon2->platoonSections.size(); iter2++)
+				{
+
+					for (auto iter = 0; iter != platoon2->platoonSections[iter2]->soldiers.size(); iter++)
+					{
+						Toolbox::printDebugMessage(platoon2->platoonSections[iter2]->soldiers[iter]->getPosition());
+					}
+
+				}
+				Toolbox::printDebugMessage("End of positions: ");
+
+				Toolbox::printDebugMessage("Goals of Platoon2 soldiers is: ");
+				for (auto iter2 = 0; iter2 != platoon2->platoonSections.size(); iter2++)
+				{
+
+					for (auto iter = 0; iter != platoon2->platoonSections[iter2]->soldiers.size(); iter++)
+					{
+						Toolbox::printDebugMessage(platoon2->platoonSections[iter2]->soldiers[iter]->goalSquare);
+					}
+
+				}
+				Toolbox::printDebugMessage("End of goals: ");
+
+
 
 				logPrinted = true;
 			}

@@ -1,5 +1,6 @@
 #include "Weapon.h"
 
+//this is the main function that deals with shooting
 void Weapon::shoot(Platoon* enemyPlatoon, Soldier* target, bool inRange, Soldier* self, bool hasTargetInRange)
 {
 

@@ -5,6 +5,9 @@
 
 class Soldier;
 
+
+//much of this class is INCOMPLETE as only shooting is required for this project
+//further development would see this class completed
 class Weapon
 {
 public:
