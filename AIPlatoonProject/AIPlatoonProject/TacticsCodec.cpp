@@ -10,6 +10,10 @@ TacticsCodec::~TacticsCodec()
 
 }
 
+//this is the main functions that must be called
+//in order to start the decision making process
+//ideally this should return a string which is then set as
+//the soldier's command list, but instead it sets it directly
 void TacticsCodec::think(SoldierData _SD, Soldier* self)
 {
 	if (self->getState() == panicked)
@@ -74,6 +78,7 @@ void TacticsCodec::think(SoldierData _SD, Soldier* self)
 	self->setGettingShotAt(false);
 }
 
+//this function is used to check to see if the soldier will panic or follow it's orders
 void TacticsCodec::panicCheck(SoldierData _SD, Soldier* self)
 {
 	int random = rand() % 100 + 1;
@@ -89,6 +94,7 @@ void TacticsCodec::panicCheck(SoldierData _SD, Soldier* self)
 	}
 }
 
+//this puts the order decision making into practice
 void TacticsCodec::act(SoldierData _SD, Soldier* self)
 {
 	Toolbox::getDistanceOfOfficer(_SD.m_platoonSection, self, _SD.m_terrainManager);
@@ -145,7 +151,7 @@ void TacticsCodec::act(SoldierData _SD, Soldier* self)
 	}
 
 }
-
+//this function sorts out what to do if there are no orders to obey
 void TacticsCodec::interpretOrders(Platoon* enemyPlatoon, Soldier* self)
 {
 	bool validTarget = false;
@@ -184,6 +190,8 @@ void TacticsCodec::interpretOrders(Platoon* enemyPlatoon, Soldier* self)
 
 }
 
+//this functions checks for cover to see if the soldier
+//is in cover or not
 void TacticsCodec::checkForCover(Soldier* self)
 {
 	if (self->getIsInCover() == false)
@@ -210,6 +218,8 @@ void TacticsCodec::checkForCover(Soldier* self)
 	}
 }
 
+//INCOMPLETE 
+//this functions was intended to be for flanking and advanced behaviour
 void TacticsCodec::flank(SoldierData _SD, Soldier* self)
 {
 	std::pair<float, Soldier*> pair = Toolbox::findDistanceOfEnemiesAndTarget(_SD.enemyPlatoon, self);
@@ -224,6 +234,8 @@ void TacticsCodec::soldierPanic(SoldierData _SD, Soldier* self)
 	self->setState(panicked);
 }
 
+//this functions is intended to simulate panic which in this case
+//means the soldier hunkers down uselessly
 void TacticsCodec::flee(SoldierData _SD, Soldier* self)
 {
 	Toolbox::printDebugMessage("Flee");
@@ -233,6 +245,7 @@ void TacticsCodec::flee(SoldierData _SD, Soldier* self)
 	act(_SD, self);
 }
 
+//this function sets a goal to move towards an enemy soldier
 void TacticsCodec::advance(Platoon* enemyPlatoon, TerrainManager* terrainManager, Soldier* leader, Soldier* self)
 {
 	Toolbox::printDebugMessage("Forward");
@@ -285,10 +298,11 @@ void TacticsCodec::advance(Platoon* enemyPlatoon, TerrainManager* terrainManager
 		self->generateMapToGoal(self->getCurrentTarget()->shape.getPosition(), terrainManager);
 		self->pathFindToGoal(self->getCurrentTarget()->shape.getPosition(), terrainManager);
 		self->executeCommand(terrainManager, leader, enemyPlatoon);
-		//clearCommandList();
+		
 	}
 }
 
+//this checks to see if the enemy is in range
 void TacticsCodec::checkRange(Platoon* enemyPlatoon, Soldier* self)
 {
 	float distance = Toolbox::findDistanceOfEnemies(enemyPlatoon, self);
