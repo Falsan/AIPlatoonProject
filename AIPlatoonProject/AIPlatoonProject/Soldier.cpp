@@ -9,6 +9,7 @@ Soldier::Soldier()
 	needsToMove = false;
 	leaderIsDead = false;
 	brain = new TacticsCodec;
+	equippedWeapon = new Weapon;
 
 }
 
@@ -46,7 +47,15 @@ void Soldier::shoot(Platoon* enemyPlatoon)
 		inRange = false;
 	}
 
-	equippedWeapon->shoot(enemyPlatoon, target, inRange, this, hasTargetInRange);
+	if (equippedWeapon->getAmmoCount() > 0)
+	{
+		equippedWeapon->shoot(enemyPlatoon, target, inRange, this, hasTargetInRange);
+	}
+	else
+	{
+		equippedWeapon->reload();
+	}
+	
 }
 
 //runs through the top executable command on the command list

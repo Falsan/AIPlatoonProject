@@ -12,7 +12,10 @@ class Weapon
 {
 public:
 
+	Weapon();
+	~Weapon();
 	void shoot(Platoon*, Soldier*, bool, Soldier*, bool);
+	void takeShot(Soldier*, Soldier*);
 	void reload();
 
 	void setWeaponType(WeaponTypes);

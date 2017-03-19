@@ -42,6 +42,18 @@ void Platoon::createPlatoonSection()
 	//temp->addSoldier();
 	//temp->addSoldier();
 	temp->chooseLeader();
+	temp->soldiers[0]->getWeapon()->setWeaponType(scopedRifle);
+	temp->soldiers[1]->getWeapon()->setWeaponType(lightMachineGun);
+	temp->soldiers[2]->getWeapon()->setWeaponType(subMachineGun);
+	temp->soldiers[3]->getWeapon()->setWeaponType(rifle);
+	temp->soldiers[4]->getWeapon()->setWeaponType(rifle);
+	temp->soldiers[5]->getWeapon()->setWeaponType(rifle);
+	temp->soldiers[0]->getWeapon()->setupAmmoCapacity();
+	temp->soldiers[1]->getWeapon()->setupAmmoCapacity();
+	temp->soldiers[2]->getWeapon()->setupAmmoCapacity();
+	temp->soldiers[3]->getWeapon()->setupAmmoCapacity();
+	temp->soldiers[4]->getWeapon()->setupAmmoCapacity();
+	temp->soldiers[5]->getWeapon()->setupAmmoCapacity();
 	platoonSections.push_back(temp);
 }
 

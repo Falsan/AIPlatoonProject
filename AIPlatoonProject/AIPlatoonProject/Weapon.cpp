@@ -1,39 +1,37 @@
 #include "Weapon.h"
 
+Weapon::Weapon()
+{
+	weaponType = rifle;
+}
+
+Weapon::~Weapon()
+{
+
+}
+
 //this is the main function that deals with shooting
 void Weapon::shoot(Platoon* enemyPlatoon, Soldier* target, bool inRange, Soldier* self, bool hasTargetInRange)
 {
 
 	if (hasTargetInRange == true)
 	{
-		int hit = rand() % 10 + 1;
-		int missChance;
-
-		if (self->getActualBraveryRating() > self->getBraveryRating())
+		if (weaponType == rifle || weaponType == scopedRifle)
 		{
-			missChance = self->getActualBraveryRating() - self->getBraveryRating();
+			takeShot(target, self);
 		}
-
-		
-
-		Toolbox::printDebugMessage("Pew");
-		target->setGettingShotAt(true);
-		self->setShooting(true);
-		if (hit >= 5)//hit
+		else if (weaponType == lightMachineGun)
 		{
-			Toolbox::printDebugMessage("Hit");
-			//target->gettingShotAt = true;
-			target->reduceHealth();
-
-			if (target->getHealth() <= 0)
-			{
-				target->setState(dead);
-				target->shape.setFillColor(sf::Color::Black);
-			}
+			takeShot(target, self);
+			takeShot(target, self);
+			takeShot(target, self);
+			takeShot(target, self);
+			takeShot(target, self);
 		}
-		else if (hit < 5)//miss
+		else if (weaponType == subMachineGun)
 		{
-			Toolbox::printDebugMessage("Miss");
+			takeShot(target, self);
+			takeShot(target, self);
 		}
 
 		hasTargetInRange = false;
@@ -46,6 +44,44 @@ void Weapon::shoot(Platoon* enemyPlatoon, Soldier* target, bool inRange, Soldier
 	{
 		Toolbox::printDebugMessage("Hunkerdown");
 	}
+}
+
+void Weapon::takeShot(Soldier* target, Soldier* self)
+{
+	int hit = rand() % 10 + 1;
+	int missChance;
+
+	if (self->getActualBraveryRating() > self->getBraveryRating())
+	{
+		missChance = self->getActualBraveryRating() - self->getBraveryRating();
+	}
+
+
+
+	Toolbox::printDebugMessage("Pew");
+	target->setGettingShotAt(true);
+	self->setShooting(true);
+	if (hit >= 5)//hit
+	{
+		Toolbox::printDebugMessage("Hit");
+		//target->gettingShotAt = true;
+		target->reduceHealth();
+
+		if (target->getHealth() <= 0)
+		{
+			target->setState(dead);
+			target->shape.setFillColor(sf::Color::Black);
+		}
+	}
+	else if (hit < 5)//miss
+	{
+		Toolbox::printDebugMessage("Miss");
+	}
+}
+
+void Weapon::reload()
+{
+	setAmmo(getAmmoCapacity());
 }
 
 void Weapon::setupAmmoCapacity()
