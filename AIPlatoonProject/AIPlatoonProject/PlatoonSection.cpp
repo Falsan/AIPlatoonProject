@@ -3,6 +3,7 @@
 PlatoonSection::PlatoonSection()
 {
 	leader = NULL;
+	isLeaderDead = false;
 }
 
 PlatoonSection::~PlatoonSection()
@@ -82,6 +83,16 @@ void PlatoonSection::setCommand(std::string commandToSet)
 std::string PlatoonSection::getCommand()
 {
 	return command;
+}
+
+void PlatoonSection::setIsLeaderDead(bool toSet)
+{
+	isLeaderDead = toSet;
+}
+
+bool PlatoonSection::getIsLeaderDead()
+{
+	return isLeaderDead;
 }
 
 int PlatoonSection::getLeader()

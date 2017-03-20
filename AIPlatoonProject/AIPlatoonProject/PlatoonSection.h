@@ -24,9 +24,12 @@ public:
 	sf::Color teamColour;
 	sf::Color teamLeaderColour;
 	std::vector<Soldier*> soldiers;
+	void setIsLeaderDead(bool);
+	bool getIsLeaderDead();
 
 private:
 	int leader;
+	bool isLeaderDead;
 		//+ waypoint vector2
 		//+ waypointFlank vector2
 };
