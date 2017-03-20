@@ -131,7 +131,14 @@ void Game::tick()
 		{
 			for (auto iter2 = 0; iter2 != platoon1->platoonSections.size(); iter2++)
 			{
-				platoon1->platoonSections[iter2]->interpretTactics();
+				if (platoon1->platoonSections[iter2]->getIsLeaderDead() == false)
+				{
+					platoon1->platoonSections[iter2]->interpretTactics();
+				}
+				else
+				{
+					platoon1->platoonSections[iter2]->setCommand("");
+				}
 
 				for (auto iter = 0; iter != platoon1->platoonSections[iter2]->soldiers.size(); iter++)
 				{
@@ -164,12 +171,25 @@ void Game::tick()
 							platoon1->platoonSections[iter2]->soldiers[iter]->mapGenerated = false;
 						}
 					}
+					else if (platoon1->platoonSections[iter2]->soldiers[iter]->getState() == dead)
+					{
+						for (int iter5 = 0; iter5 < terrainManager->terrainSquares.size(); iter5++)
+						{
+							if (terrainManager->terrainSquares[iter5]->shape.getPosition()
+								== platoon1->platoonSections[iter2]->soldiers[iter]->shape.getPosition())
+							{
+								terrainManager->terrainSquares[iter5]->setIsOccupied(false);
+							}
+						}
+					}
 
 					if (platoon1->platoonSections[iter2]->soldiers[iter]->getState() == dead &&
 						platoon1->platoonSections[iter2]->soldiers[iter]->getLeader())
 					{
+						platoon1->platoonSections[iter2]->setIsLeaderDead(true);
 						for (auto iter4 = 0; iter4 != platoon1->platoonSections[iter2]->soldiers.size(); iter4++)
 						{
+							
 							platoon1->platoonSections[iter2]->soldiers[iter4]->setLeaderIsDead(true);
 						}
 					}
@@ -178,7 +198,15 @@ void Game::tick()
 
 			for (auto iter2 = 0; iter2 != platoon2->platoonSections.size(); iter2++)
 			{
-				platoon2->platoonSections[iter2]->interpretTactics();
+				if (platoon2->platoonSections[iter2]->getIsLeaderDead() == false)
+				{
+					platoon2->platoonSections[iter2]->interpretTactics();
+				}
+				else
+				{
+					platoon2->platoonSections[iter2]->setCommand("");
+				}
+				
 				for (auto iter = 0; iter != platoon2->platoonSections[iter2]->soldiers.size(); iter++)
 				{
 					if (platoon2->platoonSections[iter2]->soldiers[iter]->getState() != dead)
@@ -211,10 +239,22 @@ void Game::tick()
 							platoon2->platoonSections[iter2]->soldiers[iter]->mapGenerated = false;
 						}
 					}
+					else if(platoon2->platoonSections[iter2]->soldiers[iter]->getState() == dead)
+					{
+						for (int iter5 = 0; iter5 < terrainManager->terrainSquares.size(); iter5++)
+						{
+							if (terrainManager->terrainSquares[iter5]->shape.getPosition()
+								== platoon2->platoonSections[iter2]->soldiers[iter]->shape.getPosition())
+							{
+								terrainManager->terrainSquares[iter5]->setIsOccupied(false);
+							}
+						}
+					}
 
 					if (platoon2->platoonSections[iter2]->soldiers[iter]->getState() == dead &&
 						platoon2->platoonSections[iter2]->soldiers[iter]->getLeader())
 					{
+						platoon2->platoonSections[iter2]->setIsLeaderDead(true);
 						for (auto iter4 = 0; iter4 != platoon2->platoonSections[iter2]->soldiers.size(); iter4++)
 						{
 							platoon2->platoonSections[iter2]->soldiers[iter4]->setLeaderIsDead(true);
@@ -247,7 +287,10 @@ void Game::draw()
 		{
 			for (auto iter2 = 0; iter2 != platoon1->platoonSections[iter3]->soldiers.size(); iter2++)
 			{
-				window.draw(platoon1->platoonSections[iter3]->soldiers[iter2]->shape);
+				if (platoon1->platoonSections[iter3]->soldiers[iter2]->getState() == dead)
+				{
+					window.draw(platoon1->platoonSections[iter3]->soldiers[iter2]->shape);
+				}
 			}
 		}
 
@@ -255,7 +298,32 @@ void Game::draw()
 		{
 			for (auto iter2 = 0; iter2 != platoon2->platoonSections[iter3]->soldiers.size(); iter2++)
 			{
-				window.draw(platoon2->platoonSections[iter3]->soldiers[iter2]->shape);
+				if (platoon2->platoonSections[iter3]->soldiers[iter2]->getState() == dead)
+				{
+					window.draw(platoon2->platoonSections[iter3]->soldiers[iter2]->shape);
+				}
+			}
+		}
+
+		for (auto iter3 = 0; iter3 != platoon1->platoonSections.size(); iter3++)
+		{
+			for (auto iter2 = 0; iter2 != platoon1->platoonSections[iter3]->soldiers.size(); iter2++)
+			{
+				if (platoon1->platoonSections[iter3]->soldiers[iter2]->getState() != dead)
+				{
+					window.draw(platoon1->platoonSections[iter3]->soldiers[iter2]->shape);
+				}
+			}
+		}
+
+		for (auto iter3 = 0; iter3 != platoon2->platoonSections.size(); iter3++)
+		{
+			for (auto iter2 = 0; iter2 != platoon2->platoonSections[iter3]->soldiers.size(); iter2++)
+			{
+				if (platoon2->platoonSections[iter3]->soldiers[iter2]->getState() != dead)
+				{
+					window.draw(platoon2->platoonSections[iter3]->soldiers[iter2]->shape);
+				}
 			}
 		}
 
