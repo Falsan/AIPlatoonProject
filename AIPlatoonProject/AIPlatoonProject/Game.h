@@ -22,12 +22,16 @@ public:
 	bool runGame();
 
 	void tick();
+	void tickPlatoonLoop(Platoon*, SoldierData);
 
 	void draw();
+	void drawPlatoonLoop(Platoon*);
+	void drawDeadPlatoonLoop(Platoon*);
 
 	bool isRunning;
 
 	void init();
+	void initPlatoonLoop(Platoon*);
 
 	void handleInput();
 
