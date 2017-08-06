@@ -134,6 +134,8 @@ void Game::tick()
 //the main platoon loop, put into it's own function to reduce code duplication
 void Game::tickPlatoonLoop(Platoon* platoon, SoldierData _SD)
 {
+	bool stillAlive = false;
+
 	for (auto iter2 = 0; iter2 != platoon->platoonSections.size(); iter2++)
 	{
 		if (platoon->platoonSections[iter2]->getIsLeaderDead() == false)
@@ -165,6 +167,8 @@ void Game::tickPlatoonLoop(Platoon* platoon, SoldierData _SD)
 						pair.second = platoon->platoonSections[iter2]->soldiers[iter]->getCurrentTarget();
 						shots.push_back(pair);
 					}
+
+					stillAlive = true;
 
 				}
 				else
@@ -199,6 +203,12 @@ void Game::tickPlatoonLoop(Platoon* platoon, SoldierData _SD)
 				}
 			}
 		}
+	}
+
+	if (stillAlive == false)
+	{
+		isRunning = false;
+		window.close();
 	}
 }
 
