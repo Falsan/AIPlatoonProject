@@ -44,16 +44,18 @@ bool Game::runGame()
 
 	while (isRunning == true)
 	{
-		
-		tick();
-		
-	
-		window.pollEvent(event);
-
-		if (event.type == sf::Event::Closed)
+		while (window.isOpen())
 		{
-			isRunning = false;
-			window.close();
+			tick();
+
+
+			window.pollEvent(event);
+
+			if (event.type == sf::Event::Closed)
+			{
+				isRunning = false;
+				window.close();
+			}
 		}
 	}
 	
@@ -111,8 +113,7 @@ void Game::initPlatoonLoop(Platoon* platoon)
 //this is the main loop for processing AI decisions
 void Game::tick()
 {
-	while (window.isOpen())
-	{
+	
 		if (gameState == play)
 		{
 			tickPlatoonLoop(platoon1, m_SD1);
@@ -126,7 +127,7 @@ void Game::tick()
 		}
 
 		resetBoard();
-	}
+	
 	//resetBoard();
 }
 

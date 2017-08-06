@@ -1,9 +1,10 @@
 #include "Game.h"
-
+#include <utility>
+#include <memory>
 
 int main()
 {
-	Game* thisGame = new Game;
+	std::unique_ptr<Game> thisGame(new Game);
 
 	srand(time(NULL));
 
@@ -11,8 +12,6 @@ int main()
 	{
 		thisGame->isRunning = thisGame->runGame();
 	}
-
-	delete thisGame;
 
 	return 0;
 }

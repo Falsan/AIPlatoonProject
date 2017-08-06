@@ -6,6 +6,7 @@ Platoon::Platoon()
 
 Platoon::~Platoon()
 {
+	platoonSections.clear();
 }
 
 void Platoon::createPlatoon()

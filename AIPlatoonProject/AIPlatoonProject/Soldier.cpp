@@ -16,6 +16,7 @@ Soldier::Soldier()
 Soldier::~Soldier()
 {
 	delete brain;
+	delete equippedWeapon;
 	delete target;
 }
 

@@ -1,17 +1,17 @@
 #pragma once
 
 #include <iostream>;
-#include <string>
-#include <SFML\Graphics.hpp>
-#include<SFML\Window.hpp>
-#include <SFML\System.hpp>
-#include"Toolbox.h"
-#include "TerrainManager.h"
-#include "Soldier.h"
-#include "GameState.h"
-#include "PlatoonSection.h"
-#include "SoldierData.h"
-#include "Platoon.h"
+#include <string>;
+#include <SFML\Graphics.hpp>;
+#include<SFML\Window.hpp>;
+#include <SFML\System.hpp>;
+#include"Toolbox.h";
+#include "TerrainManager.h";
+#include "Soldier.h";
+#include "GameState.h";
+#include "PlatoonSection.h";
+#include "SoldierData.h";
+#include "Platoon.h";
 
 class Game
 {
